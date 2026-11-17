@@ -1,0 +1,326 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\datalist[entry]{none/global//global/global/global}
+  \entry{alhasan2026breaks}{inproceedings}{}{}
+    \name{author}{2}{}{%
+      {{hash=AA}{%
+         family={{Al Hasan}},
+         familyi={A\bibinitperiod},
+         given={A.},
+         giveni={A\bibinitperiod},
+      }}%
+      {{hash=BS}{%
+         family={Biswas},
+         familyi={B\bibinitperiod},
+         given={S.},
+         giveni={S\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{AABS1}
+    \strng{fullhash}{AABS1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{booktitle}{Proceedings of the 41st IEEE/ACM International Conference
+  on Automated Software Engineering (ASE '26)}
+    \field{title}{What Breaks When {LLMs} Code? Characterizing Operational
+  Safety Failures of Agentic Code Assistants}
+    \list{location}{1}{%
+      {Munich, Germany}%
+    }
+    \field{month}{10}
+    \field{year}{2026}
+  \endentry
+
+  \entry{wang2026verigenc}{misc}{}{}
+    \name{author}{4}{}{%
+      {{hash=WZ}{%
+         family={Wang},
+         familyi={W\bibinitperiod},
+         given={Z.},
+         giveni={Z\bibinitperiod},
+      }}%
+      {{hash=LQ}{%
+         family={Li},
+         familyi={L\bibinitperiod},
+         given={Q.},
+         giveni={Q\bibinitperiod},
+      }}%
+      {{hash=SW}{%
+         family={Sun},
+         familyi={S\bibinitperiod},
+         given={W.},
+         giveni={W\bibinitperiod},
+      }}%
+      {{hash=CH}{%
+         family={Cai},
+         familyi={C\bibinitperiod},
+         given={H.},
+         giveni={H\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{WZ+1}
+    \strng{fullhash}{WZLQSWCH1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{howpublished}{arXiv:2610.30725v1}
+    \field{title}{From Natural Language to Verified {C}: Verification-Guided
+  Generation with {ACSL} Specifications}
+    \field{year}{2026}
+  \endentry
+
+  \entry{wang2018faithful}{article}{}{}
+    \name{author}{4}{}{%
+      {{hash=WW}{%
+         family={Wang},
+         familyi={W\bibinitperiod},
+         given={W.},
+         giveni={W\bibinitperiod},
+      }}%
+      {{hash=CS}{%
+         family={Chen},
+         familyi={C\bibinitperiod},
+         given={S.},
+         giveni={S\bibinitperiod},
+      }}%
+      {{hash=SZ}{%
+         family={Sun},
+         familyi={S\bibinitperiod},
+         given={Z.},
+         giveni={Z\bibinitperiod},
+      }}%
+      {{hash=FS}{%
+         family={Feng},
+         familyi={F\bibinitperiod},
+         given={S.},
+         giveni={S\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{WW+1}
+    \strng{fullhash}{WWCSSZFS1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{number}{4}
+    \field{pages}{Article 111}
+    \field{title}{Are {LLM}-Generated Formal Specifications Faithful to Their
+  Requirements? A Study on Bimodal Formal Specification Generation}
+    \field{volume}{37}
+    \field{journaltitle}{Journal of the ACM}
+    \field{month}{08}
+    \field{year}{2018}
+  \endentry
+
+  \entry{thang2026giaotrinh}{book}{}{}
+    \name{author}{1}{}{%
+      {{hash=P}{%
+         family={{PGS. TS. Huỳnh Quyết Thắng}},
+         familyi={P\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {Giáo trình Đại học Bách khoa Hà Nội}%
+    }
+    \strng{namehash}{P2}
+    \strng{fullhash}{P2}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{Nguyên lý và kỹ thuật phân tích chương trình
+  trong kỷ nguyên trí tuệ nhân tạo}
+    \field{year}{2026}
+  \endentry
+
+  \entry{nielson2010principles}{book}{}{}
+    \name{author}{3}{}{%
+      {{hash=NF}{%
+         family={Nielson},
+         familyi={N\bibinitperiod},
+         given={F.},
+         giveni={F\bibinitperiod},
+      }}%
+      {{hash=NHR}{%
+         family={Nielson},
+         familyi={N\bibinitperiod},
+         given={H.\bibnamedelima R.},
+         giveni={H\bibinitperiod\bibinitdelim R\bibinitperiod},
+      }}%
+      {{hash=HC}{%
+         family={Hankin},
+         familyi={H\bibinitperiod},
+         given={C.},
+         giveni={C\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {Springer}%
+    }
+    \strng{namehash}{NF+1}
+    \strng{fullhash}{NFNHRHC1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{Principles of Program Analysis}
+    \field{year}{2010}
+  \endentry
+
+  \entry{moller2024static}{book}{}{}
+    \name{author}{2}{}{%
+      {{hash=MA}{%
+         family={M{\o}ller},
+         familyi={M\bibinitperiod},
+         given={A.},
+         giveni={A\bibinitperiod},
+      }}%
+      {{hash=SMI}{%
+         family={Schwartzbach},
+         familyi={S\bibinitperiod},
+         given={M.\bibnamedelima I.},
+         giveni={M\bibinitperiod\bibinitdelim I\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {Aarhus University}%
+    }
+    \strng{namehash}{MASMI1}
+    \strng{fullhash}{MASMI1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{Static Program Analysis}
+    \list{location}{1}{%
+      {Aarhus, Denmark}%
+    }
+    \field{year}{2024}
+  \endentry
+
+  \entry{jimenez2024swebench}{inproceedings}{}{}
+    \true{moreauthor}
+    \true{morelabelname}
+    \name{author}{1}{}{%
+      {{hash=JCE}{%
+         family={Jimenez},
+         familyi={J\bibinitperiod},
+         given={C.\bibnamedelima E.},
+         giveni={C\bibinitperiod\bibinitdelim E\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{JCE+1}
+    \strng{fullhash}{JCE+1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{booktitle}{Proceedings of the International Conference on Learning
+  Representations (ICLR)}
+    \field{note}{arXiv:2310.06770}
+    \field{title}{{SWE-bench}: Can Language Models Resolve Real-World {GitHub}
+  Issues?}
+    \field{year}{2024}
+  \endentry
+
+  \entry{github2026copilot}{misc}{}{}
+    \name{author}{1}{}{%
+      {{hash=G}{%
+         family={{GitHub}},
+         familyi={G\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{G1}
+    \strng{fullhash}{G1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{{GitHub Copilot} Trust Center --- Operational Safety
+  Guidelines}
+    \verb{url}
+    \verb https://github.com/features/copilot
+    \endverb
+    \field{year}{2026}
+  \endentry
+
+  \entry{anthropic2026claude}{misc}{}{}
+    \name{author}{1}{}{%
+      {{hash=A}{%
+         family={{Anthropic}},
+         familyi={A\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{A1}
+    \strng{fullhash}{A1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{{Claude Code} Safety Best Practices}
+    \verb{url}
+    \verb https://docs.anthropic.com/claude-code
+    \endverb
+    \field{year}{2026}
+  \endentry
+
+  \entry{minisweagentDocs}{misc}{}{}
+    \name{author}{1}{}{%
+      {{hash=S}{%
+         family={{SWE-agent Team}},
+         familyi={S\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{S1}
+    \strng{fullhash}{S1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{mini-SWE-agent Documentation: Overview}
+    \verb{url}
+    \verb https://mini-swe-agent.com/
+    \endverb
+    \field{urlday}{13}
+    \field{urlmonth}{11}
+    \field{urlyear}{2026}
+  \endentry
+
+  \entry{itsdangerousIssue126}{misc}{}{}
+    \name{author}{1}{}{%
+      {{hash=P}{%
+         family={{Pallets Projects}},
+         familyi={P\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{P1}
+    \strng{fullhash}{P1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{{ItsDangerous} Issue 126: TimedSerializer accepts timestamps
+  from the future}
+    \verb{url}
+    \verb https://github.com/pallets/itsdangerous/issues/126
+    \endverb
+    \field{year}{2019}
+  \endentry
+
+  \entry{itsdangerousFix133}{misc}{}{}
+    \name{author}{1}{}{%
+      {{hash=P}{%
+         family={{Pallets Projects}},
+         familyi={P\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{P1}
+    \strng{fullhash}{P1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{title}{{ItsDangerous} Pull Request 133: Raise SignatureExpired error
+  when age is in the future}
+    \verb{url}
+    \verb https://github.com/pallets/itsdangerous/pull/133
+    \endverb
+    \field{year}{2020}
+  \endentry
+\enddatalist
+\endinput

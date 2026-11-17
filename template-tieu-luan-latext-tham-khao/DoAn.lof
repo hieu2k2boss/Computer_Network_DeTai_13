@@ -1,0 +1,20 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Luồng xử lý một lệnh qua bốn mô-đun của prototype DOG}}{20}{figure.caption.11}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Trích đoạn các kịch bản đại diện trong tệp \texttt {scenarios.json}}}{23}{figure.caption.13}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Kho mã ItsDangerous tại mốc \texttt {1a9b8d1} dùng làm đầu vào thực nghiệm}}{25}{figure.caption.14}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Issue~\#126 ghi nhận việc chấp nhận dấu thời gian trong tương lai và liên kết PR~\#133}}{26}{figure.caption.15}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Kho mã \texttt {pallets/markupsafe} trên GitHub}}{27}{figure.caption.16}%
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Chuẩn bị môi trường và cài DOG trong phiên MarkupSafe}}{28}{figure.caption.18}%
+\contentsline {figure}{\numberline {5.6}{\ignorespaces Trích phiên Codex kiểm tra hai trường hợp của \texttt {escape\_silent}}}{33}{figure.caption.23}%
+\contentsline {figure}{\numberline {5.7}{\ignorespaces Codex thử tạo tệp trong thư mục \texttt {.codex} và kiểm tra sau khi DOG hoàn tác}}{33}{figure.caption.24}%
+\contentsline {figure}{\numberline {5.8}{\ignorespaces Nhật ký DOG xác nhận hoàn tác thao tác tạo tệp trong thư mục \texttt {.codex}}}{34}{figure.caption.25}%
+\contentsline {figure}{\numberline {5.9}{\ignorespaces DOG chặn \texttt {git status --short} ở bước tiền kiểm}}{34}{figure.caption.26}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsfinish 
+\contentsfinish 

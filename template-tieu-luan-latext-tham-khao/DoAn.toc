@@ -1,0 +1,84 @@
+\ttl@change@i {\@ne }{chapter}{0.0cm}{\bfseries \vspace {0.3cm}}{{\bfseries \chapappintoc \thecontentslabel .\ }}{}{\titlerule *[0.3pc]{.}\contentspage }\relax 
+\ttl@change@v {chapter}{}{}{}\relax 
+\ttl@change@i {\@ne }{section}{0.0cm}{\vspace {0.3cm}}{\thecontentslabel \ }{}{\titlerule *[0.3pc]{.}\contentspage }\relax 
+\ttl@change@v {section}{}{}{}\relax 
+\ttl@change@i {\@ne }{subsection}{1.0cm}{\vspace {0.3cm}}{\thecontentslabel \ }{}{\titlerule *[0.3pc]{.}\contentspage }\relax 
+\ttl@change@v {subsection}{}{}{}\relax 
+\thispagestyle {empty}
+\contentsline {chapter}{\numberline {1}GIỚI THIỆU}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Bối cảnh}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Vấn đề}{1}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Mục tiêu}{2}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Đối tượng và phạm vi}{2}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Phương pháp nghiên cứu}{2}{section.1.5}%
+\contentsline {section}{\numberline {1.6}Đóng góp của đề tài}{3}{section.1.6}%
+\contentsline {chapter}{\numberline {2}CƠ SỞ LÝ THUYẾT}{4}{chapter.2}%
+\contentsline {section}{\numberline {2.1}An toàn vận hành của Coding Agent tự chủ}{4}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Từ gợi ý mã đến thực thi có quyền thay đổi trạng thái}{4}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Khung phân loại và các rủi ro trọng tâm}{4}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}Bối cảnh tác vụ, hậu quả và khuyến nghị}{6}{subsection.2.1.3}%
+\contentsline {section}{\numberline {2.2}Kiểm chứng mã C theo đặc tả với VeriGen-C}{6}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Kết quả kiểm chứng xác nhận thuộc tính nào?}{6}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Đồng sinh mã và đặc tả, sửa lỗi và hậu kiểm}{7}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Ý nghĩa đối với hậu kiểm của DOG}{7}{subsection.2.2.3}%
+\contentsline {section}{\numberline {2.3}Tính trung thực của đặc tả với yêu cầu}{8}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Yêu cầu làm chuẩn để đánh giá mã}{8}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Khi đặc tả chấp nhận hành vi sai}{8}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Ý nghĩa đối với việc chọn bằng chứng}{9}{subsection.2.3.3}%
+\contentsline {section}{\numberline {2.4}Tổng hợp yêu cầu thiết kế DOG}{9}{section.2.4}%
+\contentsline {chapter}{\numberline {3}PHÂN TÍCH HIỆN TRẠNG TẠI TEAM PRODUCT TẠI V}{11}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Giới thiệu team sản phẩm của V}{11}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Các sự cố điển hình}{11}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Phân tích nguyên nhân gốc}{13}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Khoảng trống của các giải pháp hiện tại}{13}{section.3.4}%
+\contentsline {chapter}{\numberline {4}GIẢI PHÁP -- DESTRUCTIVE OPERATIONS GUARDRAIL (DOG)}{15}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Nguyên lý thiết kế}{15}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Mô-đun 1: Lọc lệnh (Command Filter)}{15}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Phân tích cấu trúc lệnh Bash}{15}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Áp dụng chính sách theo tầng}{16}{subsection.4.2.2}%
+\contentsline {section}{\numberline {4.3}Mô-đun 2: Kiểm soát hạn mức tài nguyên}{17}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Mô-đun 3: Đối chiếu khai báo và trạng thái tệp}{17}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Thu thập trạng thái và xác định thay đổi}{17}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Quy tắc xác định vi phạm}{18}{subsection.4.4.2}%
+\contentsline {section}{\numberline {4.5}Mô-đun 4: Ghi log và hoàn tác}{19}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Ghi lại quyết định và bằng chứng}{19}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Hoàn tác và xác nhận trạng thái}{19}{subsection.4.5.2}%
+\contentsline {section}{\numberline {4.6}Kiến trúc tổng thể và luồng xử lý}{20}{section.4.6}%
+\contentsline {chapter}{\numberline {5}THỰC NGHIỆM VÀ ĐÁNH GIÁ}{21}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Mục đích và câu hỏi thực nghiệm}{21}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Những nội dung được chạy thực nghiệm}{21}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Thực nghiệm 1: bộ 50 kịch bản cố định}{22}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Thực nghiệm 2: tích hợp trên dự án Python mẫu}{23}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Thực nghiệm 3 -- Quan sát Codex sửa lỗi trên kho mã ItsDangerous}{24}{subsection.5.2.3}%
+\contentsline {subsubsection}{\numberline {a}Kho mã và lỗi cần sửa}{24}{subsubsection.5.2.3.1}%
+\contentsline {subsubsection}{\numberline {b}Quan sát tác vụ sửa lỗi và phát lại vi phạm}{25}{subsubsection.5.2.3.2}%
+\contentsline {subsection}{\numberline {5.2.4}Thực nghiệm 4 trên một kho mã Python từ GitHub}{26}{subsection.5.2.4}%
+\contentsline {paragraph}{Phiên tương tác trên Terminal}{27}{paragraph*.17}%
+\contentsline {paragraph}{Lượt kiểm thử định sẵn}{28}{paragraph*.19}%
+\contentsline {section}{\numberline {5.3}Thiết lập và quy trình chạy}{29}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Môi trường thực thi}{29}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}Nguyên tắc đối chứng}{29}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}Quy trình thu thập bằng chứng}{29}{subsection.5.3.3}%
+\contentsline {subsection}{\numberline {5.3.4}Chỉ số và điều kiện đạt}{30}{subsection.5.3.4}%
+\contentsline {section}{\numberline {5.4}Kết quả thực nghiệm}{30}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Kết quả RQ1: bộ kịch bản cố định}{30}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}Kết quả RQ2: tích hợp trên dự án mẫu}{31}{subsection.5.4.2}%
+\contentsline {subsection}{\numberline {5.4.3}Kết quả RQ3 -- Quan sát Codex sửa lỗi trên ItsDangerous}{31}{subsection.5.4.3}%
+\contentsline {subsection}{\numberline {5.4.4}Kết quả bổ trợ từ phép thử đối kháng}{32}{subsection.5.4.4}%
+\contentsline {subsection}{\numberline {5.4.5}Kết quả thực nghiệm 4 trên kho mã Python từ GitHub}{32}{subsection.5.4.5}%
+\contentsline {paragraph}{Phiên tương tác trên Terminal}{32}{paragraph*.22}%
+\contentsline {paragraph}{Lượt kiểm thử định sẵn}{33}{paragraph*.27}%
+\contentsline {section}{\numberline {5.5}Đánh giá và giới hạn kết luận}{35}{section.5.5}%
+\contentsline {section}{\numberline {5.6}Phương án cải thiện}{35}{section.5.6}%
+\contentsline {chapter}{\numberline {6}KẾT LUẬN}{36}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Kết luận}{36}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Đóng góp của đề tài}{36}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Hạn chế}{36}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Hướng phát triển}{37}{section.6.4}%
+\contentsline {chapter}{TÀI LIỆU THAM KHẢO}{38}{section*.29}%
+\contentsline {chapter}{PHỤ LỤC}{39}{section*.32}%
+\renewcommand {\chapappintoc }{PHỤ LỤC }
+\contentsline {chapter}{\numberline {A}DANH SÁCH ĐẦY ĐỦ 17 SỰ CỐ TẠI TEAM PRODUCT TẠI V}{40}{appendix.A}%
+\contentsline {chapter}{\numberline {B}PHÂN CÔNG CÔNG VIỆC NHÓM}{42}{appendix.B}%
+\contentsline {section}{\numberline {B.1}Bảng phân công công việc nhóm chi tiết}{42}{section.B.1}%
+\contentsfinish 
