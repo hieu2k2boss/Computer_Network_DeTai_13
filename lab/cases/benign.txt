@@ -1,0 +1,12 @@
+# Thao tac hop le tren DVWA, dung de do chan nham (false positive) o cac muc paranoia.
+# Ten bat dau bang "benign" => in page=OK neu trang hien dung noi dung mong doi.
+benign-home|GET|/index.php||Welcome to Damn Vulnerable
+benign-sqli|GET|/vulnerabilities/sqli/?id=2&Submit=Submit||Surname: Brown
+benign-blind|GET|/vulnerabilities/sqli_blind/?id=1&Submit=Submit||exists in the database
+benign-name|GET|/vulnerabilities/xss_r/?name=Nguyen+Van+An||Hello Nguyen Van An
+benign-quote|GET|/vulnerabilities/xss_r/?name=O%27Brien||Hello O'Brien
+benign-fi|GET|/vulnerabilities/fi/?page=file1.php||File 1
+benign-ping|POST|/vulnerabilities/exec/|ip=127.0.0.1&Submit=Submit|bytes from
+benign-login|GET|/vulnerabilities/brute/?username=admin&password=password&Login=Login||Welcome to the password protected area
+benign-guest|POST|/vulnerabilities/xss_s/|txtName=An&mtxMessage=Please+select+a+time+from+10+to+12%2C+or+drop+me+a+note.&btnSign=Sign+Guestbook|drop me a note
+benign-email|POST|/vulnerabilities/xss_s/|txtName=Binh&mtxMessage=Contact%3A+binh%40example.com+%28ext.+1%29&btnSign=Sign+Guestbook|binh@example.com

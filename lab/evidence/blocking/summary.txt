@@ -1,0 +1,12 @@
+Case    | Direct (no WAF)        | Via WAF               
+--------+------------------------+------------------------
+benign  | HTTP 200 page=OK       | HTTP 200 page=OK      
+sqli    | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+xss     | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+lfi     | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+cmdi    | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+[*] Luật CRS đã khớp theo từng case (audit log):
+cmdi	HTTP 403	930120,932160,949110
+lfi	HTTP 403	930100,930110,930120,932160,949110
+sqli	HTTP 403	942100,949110
+xss	HTTP 403	941100,941110,941160,941390,949110

@@ -1,0 +1,86 @@
+% Yêu cầu 5 — Ngân sách: ~3.5 trang
+\chapter{Hạn chế và kết luận}\label{chap:hanche}
+
+\section{Hạn chế của phần mềm}\label{sec:hanche}
+Ngoài kịch bản chính ở Chương~\ref{chap:demo}, nhóm chạy thêm ba thí nghiệm trên cùng lab để lượng hóa các hạn chế: 15 biến thể payload (\texttt{lab/cases/bypass.txt}), 10 thao tác hợp lệ trên DVWA ở bốn mức paranoia (\texttt{lab/cases/benign.txt}), và đo hiệu năng (\texttt{lab/scripts/bench.sh}). Kết quả lưu trong \texttt{lab/evidence/}.
+
+\subsection{Bỏ sót tấn công và vượt qua bằng biến thể payload}
+Bảng~\ref{tab:bypass} cho thấy CRS ở PL1 chống tốt các kỹ thuật né tránh kinh điển cho SQLi, XSS và LFI. Đổi hoa thường, chèn chú thích \texttt{/**/}, thay \texttt{OR} bằng \texttt{||} hay mã hóa URL hai lần đều không qua được, vì trước khi so khớp, ModSecurity giải mã và chuẩn hóa dữ liệu (\texttt{t:urlDecodeUni}, \texttt{t:lowercase}, \ldots), còn libinjection phân tích theo token chứ không theo chuỗi cố định.
+
+\begin{table}[!htb]
+\centering
+\caption{Kết quả 15 biến thể payload (số bị chặn / số biến thể)}
+\label{tab:bypass}
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xccl@{}}
+\toprule
+\textbf{Loại} & \textbf{Biến thể} & \textbf{PL1} & \textbf{PL3} & \textbf{Luật chính} \\ \midrule
+SQLi & \path{/**/} thay khoảng trắng; \path{||} thay \texttt{OR}; \texttt{LIKE}; mã hóa URL 2 lần & 4/4 & 4/4 & 942100 \\
+XSS & \path{<ScRiPt>}; \path{<svg/onload=...>}; \path{<img onerror=...>} & 3/3 & 3/3 & 941100--941390 \\
+LFI & \path{/etc/passwd}, \path{/etc/hosts} (không có \texttt{../}); \path{php://filter} & 3/3 & 3/3 & 930120, 933140 \\
+CMDi & \path{;cat ../../config/config.inc.php} & 1/1 & 1/1 & 930100--930120 \\
+CMDi & \path{;id}, \path{|id}, xuống dòng + \texttt{id}, \path{;pwd} & \textbf{0/4} & 4/4 & 932350 (PL3) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Điểm yếu nằm ở payload ngắn, ít đặc trưng. Bốn biến thể command injection dùng lệnh hai, ba ký tự (\texttt{id}, \texttt{pwd}) lọt qua PL1 hoàn toàn và chạy được trên máy chủ, vì các luật bắt lệnh Unix không kèm đối số chỉ có từ PL3. Đây là hệ quả của triết lý thiết kế CRS: PL1 ưu tiên ít chặn nhầm, chấp nhận bỏ sót. Kẻ tấn công có thể dùng chính các lệnh ngắn này để dò môi trường trước khi viết payload dài hơn.
+
+Ngoài ra, WAF dựa trên chữ ký không hiểu ngữ nghĩa ứng dụng. Nó không bảo vệ được lỗi logic nghiệp vụ, lỗi phân quyền (IDOR) hay CSRF (yêu cầu giả mạo trông hoàn toàn hợp lệ), và không chống dò mật khẩu nếu không kết hợp giới hạn tốc độ. Với lưu lượng HTTPS, WAF chỉ có tác dụng khi được đặt ở điểm kết thúc TLS.
+
+\subsection{Chặn nhầm yêu cầu hợp lệ}
+Bảng~\ref{tab:fp} là số thao tác hợp lệ (trong 10 thao tác) bị chặn ở từng mức. Ở PL1 không có chặn nhầm. Từ PL2, một lời nhắn sổ lưu bút có các từ \textit{select \ldots\ from \ldots\ drop} bị luật 942200/942260 coi là SQLi. Ở PL3, luật 932350 chặn mọi yêu cầu có tham số tên \texttt{id} như đã phân tích ở mục~\ref{sec:pl}. Ở PL4, luật 920273 chỉ chấp nhận một tập ký tự rất hẹp nên chặn cả tên \textit{Nguyen Van An} (vì dấu cách), \textit{O'Brien} và một địa chỉ email.
+
+\begin{table}[!htb]
+\centering
+\caption{Số thao tác hợp lệ bị chặn nhầm (trên 10 thao tác)}
+\label{tab:fp}
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}lcc>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Mức} & \textbf{Không loại trừ} & \textbf{Có 1 luật loại trừ} & \textbf{Luật gây chặn nhầm} \\ \midrule
+PL1 & 0 & 0 & -- \\
+PL2 & 1 & 1 & 942200, 942260 (sổ lưu bút) \\
+PL3 & 3 & 1 & 932350 (tham số \texttt{id}); 942200, 942260 \\
+PL4 & 6 & 4 & thêm 920273 (ký tự ngoài tập rất hẹp), 942432 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Kết hợp hai bảng cho thấy sự đánh đổi trực tiếp: muốn chặn được \texttt{;id} phải lên PL3, nhưng khi đó 3/10 thao tác hợp lệ bị chặn.
+
+\subsection{Chi phí tinh chỉnh luật}\label{sec:tinhchinh}
+Cách khắc phục chặn nhầm là viết luật loại trừ (rule exclusion). Listing~\ref{lst:excl} là luật nhóm viết cho DVWA, nạp sau CRS qua biến \texttt{EXCLUSION\_FILE}. Luật chỉ bỏ \emph{tên} tham số \texttt{id} khỏi danh sách biến mà 932350 kiểm tra; \emph{giá trị} các tham số vẫn được kiểm tra như cũ.
+
+\begin{lstlisting}[caption={Luật loại trừ cho DVWA (\texttt{lab/rules/dvwa-exclusions.conf})},label={lst:excl}]
+SecRuleUpdateTargetById 932350 "!ARGS_NAMES:id"
+\end{lstlisting}
+
+Với một dòng này, PL3 cho qua yêu cầu \texttt{?id=1} nhưng vẫn chặn đủ 15/15 biến thể ở Bảng~\ref{tab:bypass} và cả bốn kịch bản ở Chương~\ref{chap:demo}. Tuy vậy, PL3 vẫn chặn nhầm sổ lưu bút và PL4 còn bốn trường hợp; mỗi trường hợp cần một luật loại trừ riêng, viết đủ hẹp để không mở lỗ hổng mới. Quy trình hợp lý là chạy DetectionOnly với lưu lượng thật, đọc audit log tìm luật khớp với yêu cầu hợp lệ, viết luật loại trừ hẹp nhất có thể, rồi chạy lại bộ tấn công. Việc này phải làm lại cho từng ứng dụng và sau mỗi lần nâng cấp CRS; CRS chỉ có sẵn gói loại trừ cho một số ứng dụng phổ biến như WordPress, Drupal, Nextcloud.
+
+\subsection{Chi phí hiệu năng}
+Bảng~\ref{tab:bench} là kết quả đo bằng ApacheBench với 10 kết nối đồng thời, mỗi cấu hình 3000 yêu cầu, chạy 5 vòng xen kẽ và lấy trung vị. Yêu cầu đo là một tệp CSS tĩnh kèm ba tham số: WAF vẫn kiểm tra đầy đủ, còn thời gian xử lý của backend gần bằng 0, nên chênh lệch phản ánh chi phí của WAF.
+
+\begin{table}[!htb]
+\centering
+\caption{Hiệu năng theo cấu hình (trung vị 5 vòng, \texttt{ab -n 3000 -c 10})}
+\label{tab:bench}
+\footnotesize
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Cấu hình} & \textbf{Yêu cầu/giây} & \textbf{Thời gian TB (ms)} & \textbf{Thêm so với \texttt{Off} (ms)} \\ \midrule
+DVWA trực tiếp & 14\,555 & 0,69 & -- \\
+Nginx, ModSecurity tắt (\texttt{Off}) & 5\,944 & 1,68 & 0 \\
+ModSecurity + CRS, PL1 & 2\,221 & 4,50 & 2,82 \\
+ModSecurity + CRS, PL4 & 1\,667 & 6,00 & 4,32 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Mỗi yêu cầu tốn thêm khoảng 2,8~ms ở PL1 và 4,3~ms ở PL4 so với chỉ dùng nginx làm proxy; thông lượng giảm khoảng 63\% và 72\%. Với một trang động mất hàng chục ms để sinh ra, độ trễ thêm này là nhỏ, nhưng dưới tải cao WAF tiêu tốn CPU đáng kể và phải được tính khi định cỡ hệ thống. Số liệu đo trên một máy 8 nhân chạy chung các dịch vụ khác, chỉ có ý nghĩa so sánh tương đối.
+
+\section{Hướng phát triển}
+\todo{Đẩy audit log về Wazuh/Grafana (tích hợp nhóm khác), dùng Coraza trên Caddy/Envoy, kết hợp rate limiting/CrowdSec.}
+
+\section{Kết luận}
+\todo{Tóm tắt kết quả đạt được.}

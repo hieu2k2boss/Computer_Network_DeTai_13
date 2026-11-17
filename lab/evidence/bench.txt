@@ -1,0 +1,26 @@
+# ab -n 3000 -c 10, GET /dvwa/css/main.css?id=2&page=1&Submit=Submit, 5 vòng xen kẽ
+direct         13797.10 req/s  mean  0.725 ms  p50    1 ms  p95    1 ms  non-2xx 0
+waf-off         6262.85 req/s  mean  1.597 ms  p50    1 ms  p95    3 ms  non-2xx 0
+waf-on-pl1      2220.55 req/s  mean  4.503 ms  p50    4 ms  p95    8 ms  non-2xx 0
+waf-on-pl4      1719.22 req/s  mean  5.817 ms  p50    5 ms  p95   11 ms  non-2xx 0
+direct         14457.48 req/s  mean  0.692 ms  p50    1 ms  p95    1 ms  non-2xx 0
+waf-off         5805.27 req/s  mean  1.723 ms  p50    2 ms  p95    3 ms  non-2xx 0
+waf-on-pl1      2196.65 req/s  mean  4.552 ms  p50    4 ms  p95    8 ms  non-2xx 0
+waf-on-pl4      1709.72 req/s  mean  5.849 ms  p50    5 ms  p95   11 ms  non-2xx 0
+direct         14555.41 req/s  mean  0.687 ms  p50    1 ms  p95    1 ms  non-2xx 0
+waf-off         6178.90 req/s  mean  1.618 ms  p50    1 ms  p95    3 ms  non-2xx 0
+waf-on-pl1      2218.89 req/s  mean  4.507 ms  p50    4 ms  p95    8 ms  non-2xx 0
+waf-on-pl4      1664.76 req/s  mean  6.007 ms  p50    5 ms  p95   11 ms  non-2xx 0
+direct         14708.62 req/s  mean  0.680 ms  p50    1 ms  p95    1 ms  non-2xx 0
+waf-off         5944.01 req/s  mean  1.682 ms  p50    1 ms  p95    3 ms  non-2xx 0
+waf-on-pl1      2247.32 req/s  mean  4.450 ms  p50    4 ms  p95    8 ms  non-2xx 0
+waf-on-pl4      1667.01 req/s  mean  5.999 ms  p50    5 ms  p95   11 ms  non-2xx 0
+direct         14783.28 req/s  mean  0.676 ms  p50    1 ms  p95    1 ms  non-2xx 0
+waf-off         5832.01 req/s  mean  1.715 ms  p50    2 ms  p95    3 ms  non-2xx 0
+waf-on-pl1      2279.07 req/s  mean  4.388 ms  p50    4 ms  p95    8 ms  non-2xx 0
+waf-on-pl4      1639.18 req/s  mean  6.101 ms  p50    5 ms  p95   11 ms  non-2xx 0
+# Trung vị (req/s, mean ms):
+direct         14555.41 req/s  mean  0.687 ms
+waf-off         5944.01 req/s  mean  1.682 ms
+waf-on-pl1      2220.55 req/s  mean  4.503 ms
+waf-on-pl4      1667.01 req/s  mean  5.999 ms

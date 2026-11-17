@@ -1,0 +1,110 @@
+\documentclass[a4paper,oneside]{report}
+\usepackage[fontsize=13pt]{scrextend}
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
+\usepackage{times}
+\usepackage[left=3.5cm,right=2.5cm,top=2cm,bottom=2cm,includehead,includefoot]{geometry}
+\usepackage{setspace}
+\setstretch{1.2}
+\usepackage{indentfirst}
+\setlength{\parskip}{4pt}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx,float,caption,subcaption}
+\usepackage{booktabs,tabularx,longtable,multirow,array}
+\usepackage[table]{xcolor}
+\usepackage{enumitem}
+\setlist{itemsep=1pt,parsep=0pt,topsep=3pt}
+\emergencystretch=3em
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit}
+\usepackage{fancyhdr}
+\usepackage{titlesec,titletoc}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+\usepackage[backend=biber,style=ieee]{biblatex}
+\addbibresource{refs.bib}
+
+\graphicspath{{figures/}}
+
+% ---------- Tiêu đề chương / mục ----------
+\titleformat{\chapter}[display]{\bfseries\centering\fontsize{16}{20}\selectfont}
+  {CHƯƠNG \thechapter}{6pt}{\fontsize{16}{20}\selectfont\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{0pt}{18pt}
+\titleformat{\section}{\bfseries\fontsize{14}{17}\selectfont}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\bfseries\itshape}{\thesubsection}{0.6em}{}
+\titlecontents{chapter}[0cm]{\bfseries\vspace{0.3cm}}
+  {\bfseries CHƯƠNG \thecontentslabel.\ }{}{\titlerule*[0.3pc]{.}\contentspage}
+\titlecontents{section}[0cm]{\vspace{0.2cm}}{\thecontentslabel\ }{}{\titlerule*[0.3pc]{.}\contentspage}
+\titlecontents{subsection}[1cm]{\vspace{0.1cm}}{\thecontentslabel\ }{}{\titlerule*[0.3pc]{.}\contentspage}
+
+% ---------- Header / footer ----------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Mạng thế hệ mới -- Đề tài 13}
+\fancyhead[R]{\small\nouppercase{\leftmark}}
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername\ \thechapter}{}}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{16pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}}
+
+% ---------- Code listing ----------
+\lstset{basicstyle=\ttfamily\footnotesize,breaklines=true,frame=single,
+  columns=fullflexible,keepspaces=true,showstringspaces=false,
+  backgroundcolor=\color{gray!8},numbers=left,numberstyle=\tiny\color{gray}}
+\renewcommand{\lstlistingname}{Đoạn mã}
+
+% ---------- Ghi chú việc cần làm (xóa trước khi nộp) ----------
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO]} #1}}
+
+% ---------- Thông tin nhóm (sửa ở đây) ----------
+\newcommand{\memberA}{Họ và tên thành viên 1}
+\newcommand{\mshvA}{MSHV}
+\newcommand{\memberB}{Họ và tên thành viên 2}
+\newcommand{\mshvB}{MSHV}
+\newcommand{\lecturer}{Tên giảng viên}
+\newcommand{\classcode}{Mã lớp học phần}
+\newcommand{\repourl}{\url{https://github.com/hieu2k2boss/Computer_Network_DeTai_13}}
+
+\begin{document}
+\input{chapters/00-cover}
+
+\pagenumbering{roman}
+\tableofcontents
+\listoffigures
+\listoftables
+\chapter*{Danh mục từ viết tắt}
+\addcontentsline{toc}{chapter}{Danh mục từ viết tắt}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Viết tắt} & \textbf{Ý nghĩa} \\ \midrule
+WAF & Web Application Firewall \\
+CRS & OWASP Core Rule Set \\
+DVWA & Damn Vulnerable Web Application \\
+SQLi & SQL Injection \\
+XSS & Cross-Site Scripting \\
+LFI & Local File Inclusion \\
+CMDi & Command Injection \\
+PL & Paranoia Level \\
+SecLang & ModSecurity Rule Language \\
+TLS & Transport Layer Security \\
+DDoS & Distributed Denial of Service \\
+SIEM & Security Information and Event Management \\
+\todo{bổ sung} & \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+\pagenumbering{arabic}
+\input{chapters/01-gioi-thieu}
+\input{chapters/02-kien-truc}
+\input{chapters/03-so-sanh}
+\input{chapters/04-trien-khai}
+\input{chapters/05-demo}
+\input{chapters/06-tcvn}
+\input{chapters/07-ket-luan}
+
+\printbibliography[heading=bibintoc,title={TÀI LIỆU THAM KHẢO}]
+
+\end{document}

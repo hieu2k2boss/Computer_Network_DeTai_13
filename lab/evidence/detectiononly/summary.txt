@@ -1,0 +1,12 @@
+Case    | Direct (no WAF)        | Via WAF               
+--------+------------------------+------------------------
+benign  | HTTP 200 page=OK       | HTTP 200 page=OK      
+sqli    | HTTP 200 exploit=YES   | HTTP 200 exploit=YES  
+xss     | HTTP 200 exploit=YES   | HTTP 200 exploit=YES  
+lfi     | HTTP 200 exploit=YES   | HTTP 200 exploit=YES  
+cmdi    | HTTP 200 exploit=YES   | HTTP 200 exploit=YES  
+[*] Luật CRS đã khớp theo từng case (audit log):
+cmdi	HTTP 200	930120,932160,949110
+lfi	HTTP 200	930100,930110,930120,932160,949110,953100,959100
+sqli	HTTP 200	942100,949110
+xss	HTTP 200	941100,941110,941160,941390,949110

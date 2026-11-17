@@ -1,0 +1,14 @@
+Case          | Direct (no WAF)        | Via WAF               
+--------------+------------------------+------------------------
+benign-home   | HTTP 200 page=OK       | HTTP 200 page=OK      
+benign-sqli   | HTTP 200 page=OK       | HTTP 200 page=OK      
+benign-blind  | HTTP 200 page=OK       | HTTP 200 page=OK      
+benign-name   | HTTP 200 page=OK       | HTTP 200 page=OK      
+benign-quote  | HTTP 200 page=OK       | HTTP 200 page=OK      
+benign-fi     | HTTP 200 page=OK       | HTTP 200 page=OK      
+benign-ping   | HTTP 200 page=OK       | HTTP 200 page=OK      
+benign-login  | HTTP 200 page=OK       | HTTP 200 page=OK      
+benign-guest  | HTTP 200 page=OK       | HTTP 403 page=BROKEN  
+benign-email  | HTTP 200 page=OK       | HTTP 200 page=OK      
+[*] Luật CRS đã khớp theo từng case (audit log):
+benign-guest	HTTP 403	942200,942260,949110

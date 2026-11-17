@@ -1,0 +1,50 @@
+% Ngân sách: ~3 trang
+\chapter{Triển khai hệ thống}
+
+\section{Mô hình lab}
+\todo{Mô tả topology, địa chỉ IP, mạng Docker cô lập. Sửa hình nếu khác thực tế.}
+\begin{figure}[!htb]
+\centering
+\begin{tikzpicture}[node distance=12mm, box/.style={draw,rounded corners,minimum width=2.8cm,minimum height=10mm,font=\footnotesize,align=center}]
+  \node[box] (att) {Máy tấn công\\(curl, sqlmap, nikto)};
+  \node[box,right=of att,fill=orange!15] (waf) {WAF\\Nginx + ModSecurity\\+ OWASP CRS};
+  \node[box,right=of waf] (dvwa) {DVWA\\(Apache + PHP)};
+  \node[box,below=of dvwa] (db) {MariaDB};
+  \node[box,below=of waf] (log) {Audit log\\(JSON)};
+  \draw[-Stealth] (att) -- node[above,font=\scriptsize]{:8080} (waf);
+  \draw[-Stealth] (waf) -- (dvwa);
+  \draw[-Stealth] (dvwa) -- (db);
+  \draw[-Stealth,dashed] (waf) -- (log);
+  \node[draw,dotted,inner sep=3mm,fit=(att)(waf)(dvwa)(db)(log),label={[font=\scriptsize]below:Docker network nội bộ (cô lập)}] {};
+\end{tikzpicture}
+\caption{Mô hình lab triển khai}
+\label{fig:topology}
+\end{figure}
+
+\section{Thành phần và phiên bản}
+\begin{table}[!htb]
+\centering
+\caption{Thành phần phần mềm}
+\label{tab:components}
+\begin{tabularx}{\linewidth}{@{}lllX@{}}
+\toprule
+\textbf{Thành phần} & \textbf{Image} & \textbf{Phiên bản} & \textbf{Vai trò} \\ \midrule
+WAF & \todo{} & \todo{} & Reverse proxy, lọc HTTP \\
+DVWA & \todo{} & \todo{} & Ứng dụng web có lỗ hổng \\
+CSDL & \todo{} & \todo{} & Dữ liệu DVWA \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Script cài đặt}
+Toàn bộ cấu hình lab nằm tại kho mã \repourl.
+\todo{Trích đoạn \texttt{docker-compose.yml} chính, giải thích biến môi trường quan trọng (PARANOIA, ANOMALY\_INBOUND, MODSEC\_RULE\_ENGINE...).}
+\begin{lstlisting}[caption={Trích đoạn docker-compose.yml},label={lst:compose}]
+# TODO: paste real snippet from repo
+\end{lstlisting}
+
+\section{Cấu hình WAF}
+\todo{Bật SecRuleEngine, cấu hình audit log JSON, paranoia level đã chọn, các luật tùy chỉnh/exclusion.}
+
+\section{Kiểm tra hoạt động}
+\todo{Lệnh \texttt{docker compose up -d}, kiểm tra request hợp lệ đi qua (ảnh chụp).}

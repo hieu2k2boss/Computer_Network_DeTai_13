@@ -1,0 +1,39 @@
+\begin{titlepage}
+\begin{tikzpicture}[remember picture,overlay]
+  \draw[line width=2pt] ([xshift=2.5cm,yshift=-1.5cm]current page.north west)
+    rectangle ([xshift=-1.5cm,yshift=1.5cm]current page.south east);
+  \draw[line width=0.6pt] ([xshift=2.65cm,yshift=-1.65cm]current page.north west)
+    rectangle ([xshift=-1.65cm,yshift=1.65cm]current page.south east);
+\end{tikzpicture}
+\centering
+{\bfseries\large ĐẠI HỌC BÁCH KHOA HÀ NỘI\\[2pt]
+TRƯỜNG CÔNG NGHỆ THÔNG TIN VÀ TRUYỀN THÔNG\par}
+\vspace{0.3cm}
+\rule{0.5\linewidth}{0.8pt}
+\vspace{1.6cm}
+
+\IfFileExists{figures/logo-hust.png}{\includegraphics[height=3.2cm]{logo-hust}\par\vspace{1.2cm}}{\vspace{2.5cm}}
+
+{\bfseries\fontsize{20}{24}\selectfont BÁO CÁO PROJECT GIỮA KỲ\par}
+\vspace{0.4cm}
+{\bfseries\large Môn học: MẠNG THẾ HỆ MỚI\par}
+\vspace{1.2cm}
+
+{\bfseries\large ĐỀ TÀI 13:\par}
+\vspace{0.2cm}
+{\bfseries\fontsize{17}{22}\selectfont TƯỜNG LỬA ỨNG DỤNG WEB VỚI\\
+MODSECURITY/CORAZA VÀ OWASP CRS\par}
+\vspace{0.3cm}
+{\itshape Bảo vệ DVWA trước SQLi, XSS, LFI và Command Injection\par}
+
+\vfill
+\begin{tabular}{@{}ll@{}}
+\textbf{Giảng viên hướng dẫn:} & \lecturer \\[4pt]
+\textbf{Lớp học phần:} & \classcode \\[4pt]
+\textbf{Nhóm thực hiện:} & 1. \memberA{} -- \mshvA \\
+ & 2. \memberB{} -- \mshvB \\
+\end{tabular}
+
+\vspace{1.8cm}
+{\bfseries Hà Nội, \today\par}
+\end{titlepage}

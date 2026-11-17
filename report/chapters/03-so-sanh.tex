@@ -1,0 +1,39 @@
+% Yêu cầu 2 — Ngân sách: ~2 trang
+\chapter{So sánh với giải pháp truyền thống và thương mại}
+
+\section{So sánh với tường lửa mạng truyền thống}
+Tường lửa mạng truyền thống (iptables/nftables, OPNsense, các thiết bị stateful firewall) ra quyết định dựa trên thông tin tầng 3--4: địa chỉ IP nguồn/đích, giao thức, cổng và trạng thái kết nối. Với một ứng dụng web công khai, tường lửa buộc phải mở cổng 80/443 cho mọi người dùng, nên một yêu cầu tấn công như
+\begin{center}
+\texttt{GET /vulnerabilities/sqli/?id=1' OR '1'='1}
+\end{center}
+về mặt tầng 3--4 hoàn toàn giống một yêu cầu hợp lệ và được cho qua. Hơn nữa, khi lưu lượng được mã hóa TLS, tường lửa mạng không nhìn thấy nội dung HTTP.
+
+WAF bổ sung cho tường lửa mạng chứ không thay thế: WAF kết thúc TLS, phân tích cú pháp HTTP, chuẩn hóa dữ liệu (giải mã URL, HTML entity) rồi mới so khớp luật, nên phát hiện được tấn công nằm trong tham số. Ngược lại, WAF không lọc các giao thức khác ngoài HTTP và không thay được vai trò phân vùng mạng của tường lửa. IDS/IPS mạng như Suricata cũng có luật cho tấn công web nhưng làm việc trên gói tin, khó xử lý lưu lượng đã mã hóa.
+
+\section{So sánh với WAF thương mại}
+Nhóm chọn ba đại diện cho ba hướng triển khai thương mại: \textbf{F5 BIG-IP Advanced WAF} (trước đây là BIG-IP ASM), thiết bị phần cứng hoặc máy ảo đặt tại trung tâm dữ liệu của tổ chức~\cite{f5waf}; \textbf{Cloudflare WAF}, dịch vụ đám mây mà lưu lượng đi qua mạng biên của Cloudflare nhờ trỏ DNS~\cite{cloudflarewaf}; và \textbf{AWS WAF}, dịch vụ gắn với CloudFront, Application Load Balancer, API Gateway của AWS~\cite{awswaf}. Bảng~\ref{tab:sosanh} tóm tắt so sánh.
+
+\begin{table}[!htb]
+\centering
+\caption{So sánh ModSecurity/Coraza + CRS với một số WAF thương mại}
+\label{tab:sosanh}
+\footnotesize
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.0cm}*{4}{>{\raggedright\arraybackslash}X}@{}}
+\toprule
+\textbf{Tiêu chí} & \textbf{ModSecurity / Coraza + CRS} & \textbf{F5 Advanced WAF} & \textbf{Cloudflare WAF} & \textbf{AWS WAF} \\ \midrule
+Giấy phép, chi phí & Nguồn mở (Apache 2.0), miễn phí; chi phí là công vận hành & Giấy phép thương mại, chi phí cao & Thuê bao theo gói; gói miễn phí có bộ luật cơ bản & Trả theo số web ACL, số luật và số yêu cầu \\
+Triển khai & Tự cài trên máy chủ, container, Kubernetes & Thiết bị hoặc máy ảo tại chỗ & Đám mây, qua DNS & Chỉ trên tài nguyên AWS \\
+Bộ luật & CRS cộng đồng, có thể xem và sửa từng luật & Chữ ký của F5 và chính sách tự học & Bộ luật do Cloudflare quản lý, có phiên bản dựa trên CRS & AWS Managed Rules và luật của bên thứ ba \\
+Mô hình bảo mật & Chủ yếu mô hình âm & Cả âm và dương (học chính sách từ lưu lượng) & Chủ yếu mô hình âm & Chủ yếu mô hình âm \\
+Chống bot, DDoS tầng 7 & Không có sẵn; cần kết hợp công cụ khác & Có & Có, là thế mạnh & Có, một số tính năng tính phí riêng \\
+Quản trị, giám sát & Tệp cấu hình và log; cần tự xây giao diện, SIEM & Giao diện quản trị đầy đủ & Bảng điều khiển web, API & Bảng điều khiển AWS, CloudWatch \\
+Dữ liệu và TLS & Ở trong hạ tầng của tổ chức & Ở trong hạ tầng của tổ chức & Nhà cung cấp kết thúc TLS và thấy nội dung & Ở trong hạ tầng AWS \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Nhận xét}
+Điểm mạnh của ModSecurity/Coraza + CRS là chi phí bản quyền bằng không, tính minh bạch (đọc được từng luật và biết chính xác vì sao một yêu cầu bị chặn) và khả năng triển khai ở bất kỳ đâu, kể cả trong mạng nội bộ không kết nối Internet, giữ dữ liệu và khóa TLS trong hạ tầng của tổ chức.
+
+Đổi lại, tổ chức phải tự chịu chi phí vận hành: tinh chỉnh luật loại trừ, cập nhật CRS, xây dựng giám sát và cảnh báo. Các giải pháp thương mại bù vào phần này bằng giao diện quản trị, bộ luật được nhà cung cấp cập nhật liên tục, đội ngũ hỗ trợ, và các tính năng mà giải pháp nguồn mở không có sẵn như chống bot, chống DDoS tầng 7. Tóm lại, WAF đám mây hợp với ứng dụng công khai cần chịu tải lớn, F5 hợp với tổ chức lớn cần mô hình bảo mật dương, còn ModSecurity/Coraza hợp khi ngân sách hạn chế hoặc cần kiểm soát hoàn toàn chính sách.
