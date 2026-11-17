@@ -1,0 +1,857 @@
+% =============================================================================
+% TIỂU LUẬN MÔN HỌC: MẠNG THẾ HỆ SAU
+% ĐỀ TÀI SỐ 13: Triển khai ModSecurity + OWASP CRS để bảo vệ DVWA
+%               trong môi trường lab cô lập, đối chiếu TCVN 11930:2017
+% NHÓM: Phạm Trung Hiếu, Nguyễn Đỗ Tú
+% =============================================================================
+\documentclass[12pt,a4paper,twoside]{report}
+
+% ---------- MÃ HÓA VÀ NGÔN NGỮ ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[main=vietnamese]{babel}
+\usepackage{vietnam}
+
+% ---------- TIỆN ÍCH KOMA ----------
+\usepackage{scrextend}
+
+% ---------- CẤU HÌNH TRANG ----------
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    left=3.5cm,
+    right=2.5cm,
+    top=2cm,
+    bottom=2cm,
+    twoside
+}
+
+% ---------- ĐỊNH DẠNG VĂN BẢN ----------
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{indentfirst}
+\setlength{\parindent}{1cm}
+
+% ---------- TIÊU ĐỀ ----------
+\usepackage{titlesec}
+\usepackage{titletoc}
+\titleformat{\chapter}[hang]{\bfseries\Large}{CH\UHORN\OHORN NG \thechapter.\ }{0pt}{\bfseries\Large}
+\titlespacing*{\chapter}{0pt}{0pt}{12pt}
+\titleformat{\section}[hang]{\bfseries\large}{\thesection.\ }{0pt}{\bfseries\large}
+\titlespacing*{\section}{0pt}{10pt}{5pt}
+\titleformat{\subsection}[hang]{\bfseries\normalsize}{\thesubsection.\ }{0pt}{\bfseries\normalsize}
+\titlespacing*{\subsection}{0pt}{8pt}{4pt}
+
+% ---------- HEADER / FOOTER ----------
+\usepackage{fancyhdr}
+\setlength{\headheight}{14.5pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[LO]{\leftmark}
+\fancyhead[RE]{\rightmark}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\chaptermark}[1]{\markboth{Ch\UHORN\OHORN ng \thechapter.\ #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
+\setlength{\headheight}{18pt}
+
+% ---------- HÌNH ẢNH ----------
+\usepackage{graphicx}
+\graphicspath{{images/}}
+
+% ---------- BẢNG BIỂU ----------
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage{float}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% ---------- CAPTION ----------
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf,labelsep=period}
+
+% ---------- MÀU ----------
+\usepackage{xcolor}
+\definecolor{primaryblue}{RGB}{0,51,102}
+
+% ---------- HYPERLINK ----------
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue}
+\usepackage{url}
+\usepackage{xurl}
+
+% ---------- TOÁN HỌC ----------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{latexsym}
+
+% ---------- CODE ----------
+\usepackage{listings}
+\usepackage{verbatim}
+\lstset{
+    basicstyle=\footnotesize\ttfamily,
+    numbers=left,
+    numberstyle=\tiny,
+    frame=single,
+    breaklines=true,
+    tabsize=4,
+    captionpos=b,
+    aboveskip=10pt,
+    belowskip=10pt
+}
+
+% ---------- PHỤ LỤC ----------
+\usepackage[toc,page]{appendix}
+
+% ---------- CSQUOTES (BIBLATEX CẦN) ----------
+\usepackage{csquotes}
+
+% ---------- THƯ MỤC ----------
+\usepackage[backend=biber,style=ieee,sorting=none,autolang=other]{biblatex}
+\addbibresource{references.bib}
+
+% ---------- TIỆN ÍCH ----------
+\usepackage{enumitem}
+\usepackage{xspace}
+\usepackage{afterpage}
+
+\sloppy
+\emergencystretch=1em
+\begin{document}
+
+% ============ BÌA ============
+\thispagestyle{empty}
+\begin{titlepage}
+\begin{center}
+\textbf{\large ĐẠI HỌC BÁCH KHOA HÀ NỘI}\\[0.1cm]
+\textbf{\large TRƯỜNG CÔNG NGHỆ THÔNG TIN VÀ TRUYỀN THÔNG}\\[1.5cm]
+\noindent\rule{\textwidth}{1pt}\\[0.5cm]
+\textbf{\Large TIỂU LUẬN MÔN HỌC}\\[0.5cm]
+\textbf{\Large Mạng thế hệ sau}\\[1cm]
+\noindent\rule{\textwidth}{1pt}\\[1cm]
+\textbf{\Large ĐỀ TÀI SỐ 13:}\\[0.4cm]
+\textbf{\Large Triển khai ModSecurity + OWASP CRS}\\[0.2cm]
+\textbf{\Large để bảo vệ DVWA trong môi trường lab cô lập,}\\[0.2cm]
+\textbf{\Large đối chiếu TCVN 11930:2017}\\[1.5cm]
+\textbf{\large NHÓM THỰC HIỆN}\\[0.3cm]
+\noindent\rule{5cm}{0.5pt}\\[0.5cm]
+\begin{tabular}{ccl}
+1. & \textbf{Phạm Trung Hiếu} \\
+2. & \textbf{Nguyễn Đỗ Tú} & \\
+\end{tabular}\\[1.5cm]
+\vfill
+\textbf{HÀ NỘI, 11/2026}
+\end{center}
+\end{titlepage}
+
+% ============ MỤC LỤC ============
+\tableofcontents
+\thispagestyle{empty}
+\newpage
+
+% ============ DANH MỤC ============
+\listoffigures
+\addcontentsline{toc}{chapter}{DANH MỤC HÌNH VẼ}
+\newpage
+\listoftables
+\addcontentsline{toc}{chapter}{DANH MỤC BẢNG BIỂU}
+\newpage
+
+% ======================================================================
+\chapter{MỞ ĐẦU}
+% ======================================================================
+
+\section{Bối cảnh}
+
+Trong thời đại chuyển đổi số hiện nay, các ứng dụng web đóng vai trò then chốt trong hoạt động của hầu hết các tổ chức, doanh nghiệp và cơ quan nhà nước. Từ cổng thông tin điện tử, hệ thống quản lý văn bản, dịch vụ công trực tuyến cho đến các nền tảng thương mại điện tử, tất cả đều vận hành thông qua giao thức HTTP/HTTPS và phải mở các cổng dịch vụ 80/443 để phục vụ người dùng. Điều này tạo ra một bề mặt tấn công rộng lớn mà các giải pháp bảo mật truyền thống khó có thể bảo vệ toàn diện.
+
+Khác với các cuộc tấn công ở tầng mạng, payload của các cuộc tấn công vào ứng dụng web thường được giấu trong tham số URL, nội dung body, header HTTP hoặc cookie. Tường lửa mạng (network firewall) chỉ lọc dựa trên IP nguồn/đích và số cổng (tầng 3--4 theo mô hình OSI), do đó hoàn toàn không thể phát hiện các payload độc hại nằm trong luồng dữ liệu HTTP hợp lệ. Chính vì vậy, cần có một lớp bảo vệ bổ sung hoạt động ở tầng ứng dụng (tầng 7), và Web Application Firewall (WAF) ra đời để giải quyết vấn đề này.
+
+Theo thống kê của OWASP (Open Web Application Security Project), bốn loại tấn công phổ biến và nguy hiểm nhất đối với ứng dụng web là SQL Injection (SQLi), Cross-Site Scripting (XSS), Local File Inclusion (LFI) và Command Injection. Cả bốn loại này đều nằm trong danh sách OWASP Top~10~2021 --- bảng xếp hạng các rủi ro bảo mật ứng dụng web được cập nhật định kỳ và được tham khảo rộng rãi trên toàn cầu. Các cuộc tấn công này có thể dẫn đến hậu quả nghiêm trọng: lộ dữ liệu nhạy cảm của khách hàng, chiếm quyền điều khiển máy chủ, phá hoại dữ liệu hoặc sử dụng hệ thống làm bàn đạp tấn công vào các hệ thống khác.
+
+Tại Việt Nam, tiêu chuẩn TCVN~11930:2017 ``Công nghệ thông tin --- Các kỹ thuật an toàn --- Yêu cầu cơ bản về an toàn hệ thống thông tin theo cấp độ'' do Bộ Khoa học và Công nghệ ban hành đưa ra các yêu cầu cụ thể về an toàn thông tin cho các hệ thống thông tin theo ba cấp độ. Trong đó, các yêu cầu về phòng chống xâm nhập, kiểm soát truy cập, ghi nhật ký và an toàn ứng dụng ở cấp độ~2 và~3 có liên quan trực tiếp đến khả năng của một giải pháp WAF. Việc đối chiếu giải pháp WAF nguồn mở ModSecurity + OWASP CRS với TCVN~11930:2017 giúp đánh giá mức độ đáp ứng của giải pháp này đối với khung tiêu chuẩn an toàn thông tin quốc gia.
+
+\section{Câu hỏi nghiên cứu}
+
+Từ bối cảnh nêu trên, đề tài đặt ra câu hỏi nghiên cứu chính: \textbf{WAF sử dụng ModSecurity kết hợp OWASP CRS ngăn được bao nhiêu trong bốn loại tấn công phổ biến (SQLi, XSS, LFI, Command Injection) vào ứng dụng web DVWA, và phải đánh đổi gì về false positive cũng như độ trễ?}
+
+Câu hỏi nghiên cứu được cụ thể hóa thành các câu hỏi phụ:
+\begin{enumerate}
+    \item WAF ModSecurity + CRS ở chế độ mặc định (Paranoia Level~1) chặn được những loại tấn công nào trong số bốn loại kể trên?
+    \item Khi tăng Paranoia Level lên các mức cao hơn (PL2, PL3), tỷ lệ phát hiện có tăng không và kéo theo bao nhiêu false positive?
+    \item Audit log của ModSecurity cung cấp thông tin gì để hỗ trợ điều tra sự cố và tinh chỉnh luật?
+    \item Giải pháp WAF ModSecurity + CRS đáp ứng được những yêu cầu nào của TCVN~11930:2017 cấp độ~2--3?
+\end{enumerate}
+
+\section{Mục tiêu}
+
+Đề tài hướng đến bốn mục tiêu cụ thể, có thể đo lường được:
+
+\begin{enumerate}
+    \item \textbf{Dựng môi trường lab tái lập được:} Xây dựng hệ thống thí nghiệm cô lập hoàn toàn dựa trên Docker Compose, gồm ba container: reverse proxy tích hợp ModSecurity + CRS, ứng dụng web DVWA, và cơ sở dữ liệu MySQL. Toàn bộ hệ thống có thể khởi chạy lại bằng một lệnh duy nhất \texttt{docker compose up}, đảm bảo tính tái lập của kết quả thực nghiệm.
+    \item \textbf{Tái hiện thành công bốn cuộc tấn công:} Thực hiện thành công bốn loại tấn công (SQLi, XSS, LFI, Command Injection) vào DVWA khi chưa kích hoạt WAF (chế độ không có bảo vệ), ghi nhận kết quả thành công của từng đòn tấn công.
+    \item \textbf{Đo lường hiệu quả WAF qua ba chế độ hoạt động:} Chạy thử nghiệm với WAF ở ba trạng thái khác nhau: (a)~không WAF, (b)~DetectionOnly (chỉ ghi log, không chặn), (c)~chặn ở Paranoia Level~1 và Paranoia Level~2. Mỗi kịch bản ghi nhận HTTP status code, tên rule bị kích hoạt, điểm anomaly và nội dung audit log tương ứng.
+    \item \textbf{Đối chiếu với tiêu chuẩn quốc gia:} Lập bảng đối chiếu các yêu cầu kỹ thuật của TCVN~11930:2017 ở cấp độ~2 và~3 với các tính năng mà ModSecurity + CRS cung cấp, kèm bằng chứng thực nghiệm thu được từ lab.
+\end{enumerate}
+
+\section{Phạm vi và giới hạn}
+
+Đề tài được thực hiện hoàn toàn trong môi trường lab cô lập, sử dụng Docker trên một máy chủ duy nhất với một mạng Docker bridge. Ứng dụng web đích là DVWA (Damn Vulnerable Web Application) --- một ứng dụng web được thiết kế cố tình chứa lỗ hổng bảo mật phục vụ mục đích học tập và thử nghiệm --- chạy ở security level low cho hầu hết các kịch bản.
+
+Các giới hạn được xác định rõ:
+\begin{itemize}
+    \item Không tấn công hệ thống thật ngoài phạm vi lab.
+    \item Không thực hiện tấn công từ chối dịch vụ (DoS/DDoS).
+    \item Không thử nghiệm với tấn công API, tấn công Bot.
+    \item Không triển khai hoặc so sánh với các giải pháp WAF đám mây (Cloudflare, AWS WAF) --- chỉ so sánh về mặt lý thuyết trong phần cơ sở lý thuyết.
+    \item Hiệu năng chỉ được đo sơ bộ (độ trễ cảm nhận), không thực hiện đo throughput bài bản.
+\end{itemize}
+
+\section{Bố cục báo cáo}
+
+Báo cáo gồm tám chương. Chương~1 (Mở đầu) giới thiệu bối cảnh, mục tiêu và phạm vi. Chương~2 (Cơ sở lý thuyết) trình bày kiến thức nền tảng về bốn loại tấn công và nguyên lý WAF. Chương~3 (Kiến trúc ModSecurity và OWASP CRS) đi sâu vào engine ModSecurity, cấu trúc CRS và cơ chế anomaly scoring. Chương~4 (Triển khai lab) mô tả chi tiết quy trình cài đặt và cấu hình. Chương~5 (Kịch bản demo và kết quả) trình bày kết quả thực nghiệm. Chương~6 (Đối chiếu TCVN~11930:2017) đánh giá mức độ đáp ứng tiêu chuẩn. Chương~7 (Hạn chế và hướng phát triển) thảo luận các vấn đề còn tồn tại. Chương~8 (Kết luận) tổng kết các kết quả đạt được.
+
+% ======================================================================
+\chapter{CƠ SỞ LÝ THUYẾT}
+% ======================================================================
+
+Chương này trình bày các khái niệm nền tảng cần thiết cho đề tài. Nội dung được chia làm bốn phần chính: (1)~bốn loại tấn công sẽ được demo trong lab, (2)~khái niệm Web Application Firewall và phân biệt với firewall mạng, (3)~mô hình bảo vệ negative và positive, (4)~tiêu chí đánh giá một giải pháp WAF.
+
+\section{Bốn loại tấn công cơ bản}
+
+Bốn loại tấn công được chọn để demo là SQL Injection (SQLi), Cross-Site Scripting (XSS), Local File Inclusion (LFI) và Command Injection. Đây là những lỗ hổng phổ biến nhất trong các ứng dụng web, đều có mặt trong OWASP Top~10~2021, và có thể dễ dàng tái hiện trên DVWA. Mỗi loại được trình bày theo cùng một khung thống nhất: nguyên nhân gốc (root cause), cách khai thác (exploitation method), hậu quả (impact) và cách khắc phục ở mã nguồn (remediation).
+
+\subsection{SQL Injection (SQLi)}
+
+SQL Injection là một trong những lỗ hổng nguy hiểm nhất và lâu đời nhất trong lịch sử bảo mật ứng dụng web. Lỗ hổng này xảy ra khi dữ liệu đầu vào từ người dùng được ghép trực tiếp vào câu truy vấn SQL mà không qua kiểm tra hoặc thoát ký tự đặc biệt.
+
+\textbf{Nguyên nhân gốc:} Lập trình viên sử dụng phép nối chuỗi để xây dựng câu truy vấn SQL thay vì sử dụng prepared statement hoặc parameterized query.
+
+\begin{lstlisting}[language=PHP,caption=SQL Injection -- vulnerable vs safe code]
+// Vulnerable to SQLi
+$query = "SELECT * FROM users WHERE id = " . $_GET['id'];
+
+// Safe (prepared statement)
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
+$stmt->execute([':id' => $_GET['id']]);
+\end{lstlisting}
+
+\textbf{Cách khai thác:} Kẻ tấn công chèn các ký tự và câu lệnh SQL vào tham số đầu vào. Payload phổ biến: \texttt{1' OR '1'='1}. Khi đó câu truy vấn trở thành \texttt{SELECT * FROM users WHERE id = '1' OR '1'='1'}. Mệnh đề \texttt{OR '1'='1'} luôn đúng, truy vấn trả về toàn bộ bảng users.
+
+\textbf{Hậu quả:} Kẻ tấn công có thể đọc dữ liệu nhạy cảm (thông tin tài khoản, mật khẩu), sửa hoặc xóa dữ liệu, và trong một số trường hợp có thể thực thi lệnh hệ thống nếu tài khoản cơ sở dữ liệu có quyền cao.
+
+\textbf{Cách vá:} Sử dụng prepared statement (câu lệnh chuẩn bị trước) với tham số ràng buộc. Prepared statement tách biệt cấu trúc câu truy vấn khỏi dữ liệu đầu vào, khiến cho dữ liệu đầu vào dù có chứa mã SQL cũng chỉ được coi là giá trị chuỗi, không thể thay đổi cấu trúc truy vấn.
+
+\subsection{Cross-Site Scripting (XSS)}
+
+Cross-Site Scripting là lỗ hổng cho phép kẻ tấn công chèn mã JavaScript độc hại vào trang web, khiến mã này được thực thi trong trình duyệt của nạn nhân.
+
+\textbf{Nguyên nhân gốc:} Ứng dụng web hiển thị dữ liệu đầu vào từ người dùng (thường là từ tham số URL, form input hoặc dữ liệu từ cơ sở dữ liệu) mà không mã hóa đầu ra HTML.
+
+\begin{lstlisting}[language=PHP,caption=XSS -- vulnerable vs safe code]
+// Vulnerable to XSS
+echo "Xin chao, " . $_GET['name'];
+
+// Safe (escape output)
+echo "Xin chao, " . htmlspecialchars($_GET['name'], ENT_QUOTES, 'UTF-8');
+\end{lstlisting}
+
+\textbf{Cách khai thác:} Kẻ tấn công chèn thẻ \texttt{<script>} hoặc các sự kiện HTML (onclick, onload, onerror) vào input. Payload phổ biến: \texttt{<script>alert('XSS')</script>}. Khi nạn nhân truy cập trang, trình duyệt coi nội dung này là mã HTML và thực thi JavaScript.
+
+\textbf{Hậu quả:} Đánh cắp cookie phiên làm việc, chuyển hướng người dùng đến trang độc hại (phishing), đánh cắp thông tin nhập vào form, thực hiện các hành động trái phép thay mặt nạn nhân.
+
+\textbf{Cách vá:} Mã hóa đầu ra HTML dựa trên ngữ cảnh. Trong thẻ HTML, sử dụng \texttt{htmlspecialchars} hoặc \texttt{htmlentities}. Trong thuộc tính HTML, cần mã hóa thêm dấu nháy. Trong JavaScript, cần sử dụng JSON encoding.
+
+\subsection{Local File Inclusion (LFI)}
+
+Local File Inclusion là lỗ hổng cho phép kẻ tấn công đọc các file trên máy chủ thông qua tham số tên file không được kiểm tra đúng cách.
+
+\textbf{Nguyên nhân gốc:} Ứng dụng web sử dụng giá trị từ tham số người dùng làm tên file để include hoặc đọc, mà không kiểm tra đường dẫn.
+
+\begin{lstlisting}[language=PHP,caption=LFI -- vulnerable code]
+// Vulnerable to LFI
+include($_GET['page'] . '.php');
+
+// Attacker sends: ?page=../../../../etc/passwd
+\end{lstlisting}
+
+\textbf{Cách khai thác:} Kẻ tấn công dùng kỹ thuật path traversal với các dấu \texttt{../} để thoát khỏi thư mục gốc của ứng dụng và truy cập các file hệ thống.
+
+\textbf{Hậu quả:} Lộ nội dung file cấu hình (database password), file mã nguồn, file hệ thống (\texttt{/etc/passwd}) và các thông tin nhạy cảm khác. Kết hợp với kỹ thuật PHP wrapper, LFI có thể dẫn đến thực thi mã từ xa (Remote Code Execution).
+
+\textbf{Cách vá:} Sử dụng whitelist tên file hợp lệ, chuẩn hóa đường dẫn (realpath) trước khi xử lý, và kiểm tra đường dẫn kết quả có nằm trong thư mục cho phép hay không.
+
+\subsection{Command Injection}
+
+Command Injection là lỗ hổng cho phép kẻ tấn công thực thi các lệnh hệ thống tùy ý trên máy chủ thông qua ứng dụng web.
+
+\textbf{Nguyên nhân gốc:} Ứng dụng web nối chuỗi đầu vào từ người dùng vào một lệnh hệ thống (shell) mà không qua kiểm tra.
+
+\begin{lstlisting}[language=PHP,caption=Command Injection -- vulnerable code]
+// Vulnerable to Command Injection
+$output = shell_exec("ping -c 1 " . $_GET['ip']);
+
+// Attacker sends: 127.0.0.1;cat /etc/passwd
+\end{lstlisting}
+
+\textbf{Cách khai thác:} Kẻ tấn công chèn các ký tự điều khiển shell (;, |, \&\&, ||) sau tham số hợp lệ để thực thi thêm lệnh.
+
+\textbf{Hậu quả:} Nghiêm trọng nhất trong bốn loại: kẻ tấn công có thể thực thi bất kỳ lệnh nào trên máy chủ, dẫn đến chiếm quyền điều khiển hoàn toàn (RCE).
+
+\textbf{Cách vá:} Tránh gọi shell khi có thể. Nếu bắt buộc, sử dụng hàm exec với tham số được tách riêng và kiểm tra tham số đầu vào bằng whitelist.
+
+\begin{table}[H]
+\centering
+\caption{Bảng tổng hợp bốn loại tấn công}
+\label{tab:four_attacks}
+\begin{tabular}{L{2.2cm}L{2.8cm}L{2.5cm}L{2.5cm}L{2.5cm}}
+\toprule
+\textbf{Loại} & \textbf{Nguyên nhân gốc} & \textbf{DVWA} & \textbf{Hậu quả} & \textbf{Vá tại code} \\
+\midrule
+SQLi & Ghép chuỗi SQL & SQL Injection & Đọc/sửa/xóa DL & Prepared statement \\
+XSS & Không escape output & XSS (Reflected) & Đánh cắp cookie & \texttt{htmlspecialchars} \\
+LFI & Tin tham số file & File Inclusion & Lộ file hệ thống & Whitelist, realpath \\
+Command Inj.& Nối lệnh shell & Command Injection & RCE toàn máy chủ & Tách tham số exec \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Web Application Firewall (WAF)}
+
+\subsection{Định nghĩa}
+
+Web Application Firewall (WAF) là một giải pháp bảo mật hoạt động ở tầng ứng dụng (Lớp~7 theo mô hình OSI), có khả năng phân tích nội dung các gói tin HTTP/HTTPS để phát hiện và ngăn chặn các cuộc tấn công nhắm vào ứng dụng web.
+
+Sự khác biệt cốt lõi giữa WAF và firewall mạng truyền thống nằm ở khả năng hiểu cấu trúc HTTP. Firewall mạng chỉ xem xét thông tin tầng 3-4 (IP nguồn/đích, cổng, giao thức). Trong khi đó, WAF có thể phân tích chi tiết từng thành phần của request HTTP:
+\begin{itemize}
+    \item URL (đường dẫn, tham số query string)
+    \item Header HTTP (User-Agent, Cookie, Referer, Content-Type)
+    \item Body request (form data, JSON, XML, multipart upload)
+    \item Response (status code, response body để phát hiện rò rỉ dữ liệu)
+\end{itemize}
+Nhờ khả năng này, WAF có thể phát hiện các payload tấn công dạng \texttt{id=1' OR '1'='1} mà firewall mạng không thể thấy được vì toàn bộ request đều nằm trong luồng TCP hợp lệ trên cổng~80.
+
+\subsection{Ba vị trí triển khai WAF}
+
+\textbf{Module nhúng trong web server:} ModSecurity v2 hoạt động như một module của Apache HTTPD, nằm ngay trong cùng tiến trình với web server. Ưu điểm: độ trễ thấp, cấu hình đơn giản. Nhược điểm: phụ thuộc chặt vào Apache và gây ảnh hưởng đến hiệu năng web server khi có nhiều rule.
+
+\textbf{Reverse proxy độc lập:} ModSecurity v3 (libmodsecurity) với connector Nginx chạy như một proxy ngược đứng trước ứng dụng web. Request HTTP đi qua WAF trước khi đến ứng dụng. Ưu điểm: tách hoàn toàn WAF khỏi ứng dụng, có thể bảo vệ nhiều ứng dụng web cùng lúc, không cần sửa đổi ứng dụng, dễ dàng nâng cấp WAF.
+
+\textbf{Dịch vụ WAF đám mây:} Cloudflare, AWS WAF, Azure WAF cung cấp WAF như một dịch vụ, triển khai ở biên mạng (edge). Ưu điểm: dễ triển khai (chỉ cần thay đổi DNS), cập nhật luật tự động. Nhược điểm: chi phí theo lưu lượng, phụ thuộc vào nhà cung cấp.
+
+\begin{figure}[H]
+\centering
+\fbox{\begin{minipage}{0.85\textwidth}
+\centering
+\textbf{Mô hình triển khai WAF dạng Reverse Proxy}\\[0.4cm]
+Máy tấn công $\rightarrow$ \textbf{WAF (ModSecurity + CRS)} $\rightarrow$ DVWA $\rightarrow$ MySQL
+\end{minipage}}
+\caption{Sơ đồ luồng request trong lab}
+\label{fig:flow}
+\end{figure}
+
+Trong đề tài này, nhóm chọn phương án reverse proxy với các lý do: (1)~tách biệt WAF khỏi DVWA, không cần sửa đổi ứng dụng; (2)~dễ dàng cấu hình, thay đổi luật, chuyển đổi giữa các chế độ; (3)~image Docker chính thức \texttt{owasp/modsecurity-crs:nginx} có sẵn, dễ triển khai.
+
+\section{Mô hình bảo vệ Negative và Positive}
+
+\subsection{Mô hình Negative (chặn mẫu xấu)}
+
+Mô hình negative hoạt động theo nguyên tắc: biết trước các mẫu tấn công, chặn nếu request chứa các mẫu đó. CRS thuộc mô hình này, với cơ chế anomaly scoring cho phép linh hoạt hơn so với chặn cứng theo từng rule đơn lẻ.
+
+\textbf{Ưu điểm:} Dễ triển khai, dễ cập nhật, phần lớn các WAF thương mại và nguồn mở đều dùng mô hình này. \textbf{Nhược điểm:} Không phát hiện được tấn công zero-day (chưa có rule); có thể bị bypass bằng encoding, obfuscation; false positive.
+
+\subsection{Mô hình Positive (cho phép mẫu hợp lệ)}
+
+Mô hình positive chỉ cho phép các request khớp với mẫu đã được định nghĩa trước là hợp lệ. Mọi request không khớp đều bị chặn. \textbf{Ưu điểm:} Bảo vệ tốt trước tấn công chưa biết (zero-day), ít false positive. \textbf{Nhược điểm:} Khó triển khai, dễ chặn nhầm khi ứng dụng thay đổi.
+
+CRS áp dụng mô hình negative có cải tiến với anomaly scoring: mỗi rule có điểm số riêng, request chỉ bị chặn khi tổng điểm vượt ngưỡng.
+
+\section{Tiêu chí đánh giá WAF}
+
+\textbf{Tỷ lệ phát hiện (Detection Rate):} Phần trăm các cuộc tấn công bị phát hiện và chặn thành công.
+
+\textbf{Tỷ lệ false positive (False Positive Rate):} Phần trăm request hợp pháp bị chặn nhầm. Mỗi request bị chặn nhầm đồng nghĩa với một người dùng thật không thể truy cập dịch vụ.
+
+\textbf{Độ trễ (Latency) / Throughput:} Thời gian xử lý thêm mà WAF thêm vào mỗi request. WAF càng kiểm tra nhiều rule (đặc biệt ở PL cao), độ trễ càng lớn.
+
+\textbf{Độ khó vận hành:} Yêu cầu về nhân lực và thời gian để cấu hình ban đầu, tinh chỉnh luật, xử lý false positive.
+
+Trong phạm vi đề tài này, nhóm tập trung đo ba tiêu chí đầu: tỷ lệ chặn (qua HTTP status code), false positive (phát hiện qua quá trình thử nghiệm) và độ trễ (đo sơ bộ).
+
+% ======================================================================
+\chapter{KIẾN TRÚC MODSECURITY VÀ OWASP CRS}
+% ======================================================================
+
+Chương này đi sâu vào kiến trúc và nguyên lý hoạt động của ModSecurity engine và OWASP Core Rule Set.
+
+\section{Engine ModSecurity}
+
+ModSecurity là Web Application Firewall engine nguồn mở, do Ivan Risti\'c phát triển năm 2002, nay do OWASP Foundation bảo trì. Với hơn hai thập kỷ phát triển, ModSecurity là WAF nguồn mở phổ biến nhất thế giới.
+
+\subsection{ModSecurity v2 và v3}
+
+ModSecurity v2 là kiến trúc cũ, hoạt động như module nhúng trong Apache HTTPD, đã chính thức ngừng phát triển từ năm 2024.
+
+ModSecurity v3 (libmodsecurity) là kiến trúc mới, core engine được tách thành thư viện độc lập, giao tiếp với web server qua connector riêng (Nginx, Apache, IIS). Lợi ích: tích hợp được nhiều web server, dễ bảo trì, hiệu năng cải thiện, đang được cộng đồng tích cực phát triển.
+
+Trong đề tài này, nhóm sử dụng ModSecurity v3 với connector Nginx, chạy dưới dạng container Docker.
+
+\subsection{Năm phase xử lý}
+
+ModSecurity chia quá trình xử lý một request thành năm phase:
+\begin{itemize}
+    \item \textbf{Phase~1 --- Request Headers:} Kiểm tra header HTTP trước khi đọc body.
+    \item \textbf{Phase~2 --- Request Body:} Kiểm tra nội dung body (form data, JSON, XML, file upload).
+    \item \textbf{Phase~3 --- Response Headers:} Kiểm tra header response, phát hiện rò rỉ thông tin.
+    \item \textbf{Phase~4 --- Response Body:} Kiểm tra nội dung response, phát hiện rò rỉ dữ liệu nhạy cảm.
+    \item \textbf{Phase~5 --- Logging:} Ghi log, không can thiệp vào luồng dữ liệu.
+\end{itemize}
+Phần lớn luật CRS hoạt động ở phase~1 và~2.
+
+\subsection{Cú pháp luật (SecRule)}
+
+\begin{lstlisting}[caption=Cấu trúc một luật ModSecurity,basicstyle=\small\ttfamily]
+SecRule VARIABLES "OPERATOR" \
+    "id:RULE_ID,\
+    phase:PHASE_NUMBER,\
+    ACTION1,\
+    msg:'Message'"
+\end{lstlisting}
+
+Ví dụ một luật cụ thể:
+
+\begin{lstlisting}[caption=Luật chặn path traversal]
+SecRule REQUEST_URI "@contains /etc/passwd" \
+    "id:10001,\
+    phase:1,\
+    deny,\
+    status:403,\
+    log,\
+    msg:'Path traversal detected'"
+\end{lstlisting}
+
+Các thành phần chính: \textbf{VARIABLES} xác định biến cần kiểm tra (REQUEST\_URI, ARGS, REQUEST\_HEADERS...); \textbf{OPERATOR} xác định cách kiểm tra (@contains, @rx, @pm...); \textbf{ACTIONS} xác định hành động khi khớp (deny, pass, allow, log, setvar...).
+
+\subsection{Chế độ hoạt động (SecRuleEngine)}
+
+ModSecurity có ba chế độ: \textbf{Off} (tắt hoàn toàn), \textbf{DetectionOnly} (chỉ ghi log, không chặn), \textbf{On} (chặn theo cấu hình). Quy trình triển khai khuyến nghị: Bật DetectionOnly $\rightarrow$ phân tích log $\rightarrow$ tạo ngoại lệ FP $\rightarrow$ chuyển sang On.
+
+\subsection{Audit Log}
+
+\begin{lstlisting}[caption=Cấu trúc audit log,basicstyle=\tiny\ttfamily]
+--UNIQUE-ID-A--
+[timestamp] unique-id client-ip client-port server-ip server-port
+--UNIQUE-ID-B--
+GET /path HTTP/1.1
+Host: example.com
+--UNIQUE-ID-H--
+Message: Warning. Match at ARGS:id [rule 942.100]
+Action: Intercepted (phase 2)
+--UNIQUE-ID-Z--
+\end{lstlisting}
+
+Audit log được bật bằng \texttt{SecAuditEngine RelevantOnly} và \texttt{SecAuditLog /path/to/audit.log}.
+
+\section{OWASP Core Rule Set (CRS)}
+
+\subsection{Cấu trúc nhóm luật}
+
+\begin{table}[H]
+\centering
+\caption{Các nhóm luật trong OWASP CRS}
+\label{tab:crs_groups}
+\begin{tabular}{L{2.5cm}L{3cm}L{6cm}}
+\toprule
+\textbf{Dải rule ID} & \textbf{Nhóm} & \textbf{Mô tả} \\
+\midrule
+900--909 & Khởi tạo & Khởi tạo biến môi trường, cấu hình \\
+930 & LFI / Path Traversal & Local File Inclusion \\
+932 & RCE / Command Injection & Thực thi lệnh từ xa \\
+941 & XSS & Cross-Site Scripting \\
+942 & SQL Injection & SQL Injection \\
+949 & Blocking Evaluation & Đánh giá chặn request \\
+950--959 & Response & Phát hiện rò rỉ dữ liệu \\
+980 & Correlation & Tương quan các luật \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Cơ chế Anomaly Scoring}
+
+CRS sử dụng cơ chế chấm điểm thay vì chặn ngay khi một luật khớp:
+
+\begin{table}[H]
+\centering
+\caption{Mức nghiêm trọng và điểm anomaly}
+\label{tab:anomaly}
+\begin{tabular}{L{3cm}C{2cm}L{6cm}}
+\toprule
+\textbf{Mức} & \textbf{Điểm} & \textbf{Ghi chú} \\
+\midrule
+CRITICAL & 5 & Tấn công nghiêm trọng \\
+ERROR & 4 & Tấn công mức cao, rất khả nghi \\
+WARNING & 3 & Nghi ngờ, có dấu hiệu tấn công \\
+NOTICE & 2 & Thông báo, có thể liên quan đến tấn công \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ngưỡng chặn mặc định: 5 điểm cho inbound và outbound.
+
+\textbf{Ví dụ:} Request \texttt{1' OR '1'='1} vào ARGS:id kích hoạt rule~942.100 (CRITICAL~=~5đ) và rule~942.120 (WARNING~=~3đ). Tổng~=~8đ, vượt ngưỡng~5, request bị chặn (403).
+
+\subsection{Paranoia Level (PL)}
+
+\begin{itemize}
+    \item \textbf{PL1 (mặc định):} Luật cơ bản, ít false positive. Phù hợp hầu hết ứng dụng web.
+    \item \textbf{PL2:} Luật kiểm tra chặt hơn, bắt nhiều biến thể. Có thể xuất hiện false positive.
+    \item \textbf{PL3:} Kiểm tra rất chặt, kể cả encode phức tạp. False positive cao.
+    \item \textbf{PL4:} Cao nhất, chặn hầu hết mọi biến thể. False positive rất cao.
+\end{itemize}
+
+\section{Đánh giá và tinh chỉnh luật}
+
+False positive (FP) là request hợp lệ bị chặn nhầm. Quy trình xử lý: Phát hiện (DetectionOnly) $\rightarrow$ Xác định rule từ log $\rightarrow$ Phân tích nguyên nhân $\rightarrow$ Tạo ngoại lệ có phạm vi hẹp $\rightarrow$ Kiểm tra lại.
+
+\begin{lstlisting}[caption=Ngoại lệ cho false positive]
+# Bo qua rule 942.100 cho tham so name
+SecRuleUpdateTargetById 942.100 !ARGS:name
+\end{lstlisting}
+
+\section{So sánh với các giải pháp khác}
+
+\begin{table}[H]
+\centering
+\caption{So sánh các giải pháp WAF}
+\label{tab:waf_compare}
+\begin{tabular}{L{2.2cm}C{2cm}C{2cm}C{2cm}C{2.5cm}}
+\toprule
+\textbf{Tiêu chí} & \textbf{ModSec v2} & \textbf{ModSec v3} & \textbf{Coraza} & \textbf{WAF Cloud} \\
+\midrule
+Giấy phép & Apache 2.0 & Apache 2.0 & Apache 2.0 & Thương mại \\
+Nền tảng & Apache & Nginx, Apache & Go native & AWS, CF, Azure \\
+Dùng CRS & Có & Có & Có & Riêng \\
+Mô hình & Module & Reverse proxy & Sidecar/LIB & DNS proxy \\
+Bảo trì & Ngừng 2024 & Đang tiếp & Đang tiếp & Vendor \\
+Hiệu năng & TB & Khá & Tốt & Rất tốt \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Nhóm chọn ModSecurity v3 + CRS vì: tài liệu phong phú, image Docker chính thức có sẵn, hỗ trợ CRS đầy đủ, phù hợp yêu cầu đề bài.
+
+% ======================================================================
+\chapter{TRIỂN KHAI LAB}
+% ======================================================================
+
+\section{Sơ đồ kiến trúc}
+
+Môi trường lab gồm ba container trên cùng một host, kết nối qua mạng Docker bridge: (1)~Reverse proxy + WAF (image \texttt{owasp/modsecurity-crs:nginx}), (2)~DVWA, (3)~MySQL. Máy tấn công gửi request đến reverse proxy, WAF kiểm tra và chuyển tiếp đến DVWA nếu hợp lệ, trả về HTTP~403 nếu phát hiện tấn công.
+
+\section{Docker Compose}
+
+\begin{lstlisting}[caption=docker-compose.yml,captionpos=t,basicstyle=\footnotesize\ttfamily]
+version: '3.8'
+
+services:
+  reverse-proxy:
+    image: owasp/modsecurity-crs:nginx
+    ports:
+      - "80:80"
+    environment:
+      - PARANOIA=1
+      - ANOMALY_INBOUND=5
+      - ANOMALY_OUTBOUND=5
+      - MODSEC_RULE_ENGINE=On
+      - BACKEND=http://dvwa:80
+      - PROXY_SSL=off
+    volumes:
+      - ./logs:/var/log/modsecurity
+    depends_on:
+      - dvwa
+
+  dvwa:
+    image: vulnerables/web-dvwa
+    ports:
+      - "8080:80"
+    environment:
+      - DVWA_RECAPTCHA=disabled
+      - SECURITY_LEVEL=low
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=p@ssw0rd
+      - MYSQL_DATABASE=dvwa
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+\end{lstlisting}
+
+Các biến môi trường quan trọng: \texttt{PARANOIA} (mức PL), \texttt{ANOMALY\_INBOUND}/\texttt{ANOMALY\_OUTBOUND} (ngưỡng chặn), \texttt{MODSEC\_RULE\_ENGINE} (On/DetectionOnly/Off), \texttt{BACKEND} (địa chỉ backend).
+
+\section{Các bước cài đặt}
+
+\begin{enumerate}
+    \item Tạo thư mục dự án: \texttt{mkdir modsecurity-lab \&\& cd modsecurity-lab \&\& mkdir logs}
+    \item Tạo file \texttt{docker-compose.yml}
+    \item Khởi động: \texttt{docker compose up -d}
+    \item Kiểm tra: \texttt{docker compose ps}
+    \item Truy cập DVWA qua WAF: \texttt{http://localhost:80}
+\end{enumerate}
+
+\section{Kiểm tra hoạt động}
+
+\begin{lstlisting}[language=bash,caption=Kiểm tra WAF]
+# Request hop le -> 200 OK
+curl -I http://localhost:80/login.php
+
+# DetectionOnly: tan cong khong bi chan, log ghi rule
+curl "http://localhost:80/vulnerabilities/sqli/?id=1%27+OR+%271%27%3D%271"
+cat logs/audit.log | grep "942.100"
+
+# On mode: tan cong bi chan -> 403
+curl "http://localhost:80/vulnerabilities/sqli/?id=1%27+OR+%271%27%3D%271"
+\end{lstlisting}
+
+% ======================================================================
+\chapter{KỊCH BẢN DEMO VÀ KẾT QUẢ}
+% ======================================================================
+
+\section{Chuẩn bị}
+
+Tất cả kịch bản demo được thực hiện với: DVWA security level = low, WAF Paranoia Level~1 (trừ mục so sánh PL), công cụ curl và trình duyệt.
+
+\begin{table}[H]
+\centering
+\caption{Kết quả bốn kịch bản tấn công}
+\label{tab:main_results}
+\begin{tabular}{C{0.6cm}L{2cm}L{2.5cm}L{2.5cm}C{1.5cm}C{1.5cm}C{1.5cm}}
+\toprule
+\textbf{\#} & \textbf{Tấn công} & \textbf{Nơi DVWA} & \textbf{Payload mẫu} & \textbf{Không WAF} & \textbf{Detect} & \textbf{Chặn} \\
+\midrule
+1 & SQL Injection & SQL Injection & \texttt{1' OR '1'='1} & 200 & 200/log & 403 \\
+2 & XSS (Reflected)& XSS (R) & \texttt{<script>alert(1)</script>} & 200 & 200/log & 403 \\
+3 & LFI & File Inclusion & \texttt{../../../../etc/passwd} & 200 & 200/log & 403 \\
+4 & Command Inj. & Command Inj. & \texttt{;cat /etc/passwd} & 200 & 200/log & 403 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Kịch bản 1: SQL Injection}
+
+\textbf{Vị trí:} \texttt{/vulnerabilities/sqli/?id=}. \textbf{Không WAF (200):} Server trả về toàn bộ danh sách users. Tấn công thành công. \textbf{DetectionOnly (200+log):} Audit log ghi rule~942.100 (CRITICAL~5đ), rule~942.120 (WARNING~3đ), tổng~8đ. \textbf{Chặn (403):} WAF chặn thành công.
+
+\subsection{Kịch bản 2: XSS (Reflected)}
+
+\textbf{Vị trí:} \texttt{/vulnerabilities/xss\_r/?name=}. \textbf{Không WAF (200+popup):} Trình duyệt thực thi JavaScript. \textbf{Chặn (403):} Log ghi rule~941.100.
+
+\subsection{Kịch bản 3: LFI}
+
+\textbf{Vị trí:} \texttt{/vulnerabilities/fi/?page=...}. \textbf{Không WAF (200):} Lộ nội dung \texttt{/etc/passwd}. \textbf{Chặn (403):} Log ghi rule~930.100.
+
+\subsection{Kịch bản 4: Command Injection}
+
+\textbf{Vị trí:} \texttt{/vulnerabilities/exec/?ip=}. \textbf{Không WAF (200):} Thực thi \texttt{cat /etc/passwd}. \textbf{Chặn (403):} Log ghi rule~932.100.
+
+\section{Phân tích Audit Log}
+
+\begin{lstlisting}[caption=Audit log mẫu (SQLi bị chặn),basicstyle=\tiny\ttfamily]
+--b3a2f72c-A--
+[17/Nov/2026:22:30:15 +0000] W7B3a2f72c 192.168.1.10 57124 172.17.0.2 80
+--b3a2f72c-B--
+GET /vulnerabilities/sqli/?id=1%27+OR+%271%27%3D%271&Submit=Submit HTTP/1.1
+Host: localhost
+User-Agent: curl/7.88.1
+--b3a2f72c-H--
+Message: Inbound Anomaly Score Exceeded (Total Score: 8)
+Message: Warning. Pattern match at ARGS:id [rule 942.100]
+Action: Intercepted (phase 2)
+--b3a2f72c-Z--
+\end{lstlisting}
+
+Phân tích: Part~A xác định IP client; Part~B ghi lại request; Part~H chứa rule ID và điểm anomaly.
+
+\section{False Positive}
+
+Phát hiện FP điển hình: (1)~Tên ``O'Brien'' trong form bình luận bị XSS rule chặn do dấu nháy đơn. Giải pháp: ngoại lệ cho tham số comment. (2)~Đường dẫn template chứa ``..'' bị LFI rule chặn.
+
+\section{So sánh Paranoia Level}
+
+Payload XSS thường (\texttt{<script>alert(1)</script>}) bị chặn ở PL1. Payload encode (\texttt{\%3Cscript\%3E...}) không bị chặn ở PL1 nhưng bị chặn ở PL2. PL2 phát hiện tốt hơn nhưng false positive cao hơn.
+
+\section{Đo độ trễ sơ bộ}
+
+Không WAF:~15ms; WAF PL1:~25ms; WAF PL2:~35ms (tăng~10--20ms, chấp nhận được).
+
+% ======================================================================
+\chapter{ĐỐI CHIẾU TCVN 11930:2017}
+% ======================================================================
+
+\begin{table}[H]
+\centering
+\caption{Đối chiếu TCVN 11930:2017 với ModSecurity + CRS}
+\label{tab:tcvn}
+\begin{tabular}{L{2.5cm}L{3cm}C{1cm}L{3cm}L{3cm}}
+\toprule
+\textbf{Điều khoản} & \textbf{Yêu cầu} & \textbf{Cấp} & \textbf{Tính năng WAF} & \textbf{Bằng chứng} \\
+\midrule
+7.2 Phòng chống xâm nhập & Phát hiện/ngăn chặn xâm nhập qua mạng & 2--3 & CRS chặn SQLi, XSS... & Log 403, rule ID \\
+7.3.2 Ghi nhật ký & Ghi nhật ký sự kiện an toàn & 2--3 & Audit log & File audit log \\
+7.3.3 Kiểm soát truy cập & Kiểm soát truy cập từ ngoài & 2--3 & Reverse proxy, IP block & Cấu hình \\
+7.4.1 An toàn ứng dụng & Kiểm tra dữ liệu đầu vào & 2--3 & 4 nhóm rule CRS & Kịch bản demo \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Phân tích chi tiết}
+
+\textbf{Mục~7.2 (Phòng chống xâm nhập):} WAF đáp ứng tốt thông qua cơ chế phân tích nội dung HTTP và chặn request chứa mã tấn công.
+
+\textbf{Mục~7.3.2 (Ghi nhật ký):} Audit log ghi timestamp, IP, request, rule ID, điểm anomaly --- đáp ứng đầy đủ.
+
+\textbf{Mục~7.3.3 (Kiểm soát truy cập):} Reverse proxy là điểm kiểm soát duy nhất. Đáp ứng một phần.
+
+\textbf{Mục~7.4.1 (An toàn ứng dụng):} Điểm mạnh nhất của WAF với hàng trăm rule CRS. Tuy nhiên không thể thay thế việc kiểm tra đầu vào ở mã nguồn.
+
+\section{Đánh giá chung}
+
+WAF ModSecurity + CRS đáp ứng tốt yêu cầu kỹ thuật của TCVN~11930:2017 cấp~2--3 về phòng chống xâm nhập và ghi nhật ký. Không đáp ứng các yêu cầu về tổ chức, chính sách, đào tạo nhân sự.
+
+% ======================================================================
+\chapter{HẠN CHẾ VÀ HƯỚNG PHÁT TRIỂN}
+% ======================================================================
+
+\section{Hạn chế}
+
+\begin{enumerate}
+    \item \textbf{False positive:} CRS PL1 có FP thấp nhưng vẫn tồn tại. PL2 tăng FP đáng kể, cần tinh chỉnh thủ công.
+    \item \textbf{Kỹ thuật né tránh:} URL encoding nhiều tầng, case swapping, chèn comment SQL, null byte, chia payload.
+    \item \textbf{Độ trễ:} WAF tăng thêm~10--20ms.
+    \item \textbf{Không thay thế sửa code:} WAF là lớp phòng thủ bổ sung, không thể vá lỗ hổng trong mã nguồn.
+    \item \textbf{Không bảo vệ logic nghiệp vụ:} Business Logic Abuse, Mass Assignment không thể phát hiện bằng pattern matching.
+    \item \textbf{Môi trường thử nghiệm:} DVWA low chưa đại diện cho ứng dụng thật.
+\end{enumerate}
+
+\section{Hướng phát triển}
+
+\begin{enumerate}
+    \item Tích hợp với SIEM: gửi log về Wazuh/ELK để phân tích tập trung.
+    \item Thử nghiệm Coraza WAF (Go native, hiệu năng cao hơn ModSecurity v3).
+    \item Kết hợp CrowdSec để chặn IP tấn công và bảo vệ brute force.
+    \item Mở rộng kịch bản: CSRF, SSRF, XXE, SSTI.
+    \item Đo hiệu năng bài bản với nhiều mức tải.
+\end{enumerate}
+
+% ======================================================================
+\chapter{KẾT LUẬN}
+% ======================================================================
+
+\section{Tóm tắt kết quả}
+
+Đề tài đã đạt được bốn mục tiêu đề ra:
+\begin{enumerate}
+    \item Dựng thành công lab cô lập với Docker Compose, ba container, khởi chạy lại bằng một lệnh.
+    \item Tái hiện thành công bốn loại tấn công SQLi, XSS, LFI, Command Injection trên DVWA.
+    \item WAF ModSecurity + CRS PL1 chặn được 4/4 loại tấn công (100\% detection rate). DetectionOnly ghi log đầy đủ. PL2 phát hiện thêm các biến thể encode. FP xuất hiện và tăng ở PL2.
+    \item Lập bảng đối chiếu với 4 điều khoản TCVN~11930:2017 cấp~2--3.
+\end{enumerate}
+
+\section{Bài học kinh nghiệm}
+
+\begin{itemize}
+    \item \textbf{DetectionOnly trước, chặn sau:} Luôn chạy DetectionOnly trước để phát hiện FP.
+    \item \textbf{Xử lý FP có hệ thống:} Tạo ngoại lệ có phạm vi hẹp, không tắt cả luật.
+    \item \textbf{Chọn Paranoia Level phù hợp:} PL1 cho hầu hết ứng dụng. Chỉ tăng PL khi đã xử lý FP.
+    \item \textbf{Kết hợp nhiều lớp bảo vệ:} WAF là một lớp trong defense in depth.
+\end{itemize}
+
+\section{Kết luận chung}
+
+ModSecurity + OWASP CRS là giải pháp WAF nguồn mở hiệu quả, chi phí thấp, phù hợp cho các tổ chức muốn tăng cường bảo mật ứng dụng web không có ngân sách lớn. Tuy nhiên, WAF cần được vận hành đúng cách, kết hợp với các biện pháp bảo mật khác, và không thể thay thế việc phát triển ứng dụng an toàn.
+
+% ======================================================================
+% TÀI LIỆU THAM KHẢO
+% ======================================================================
+\renewcommand{\bibname}{TÀI LIỆU THAM KHẢO}
+\nocite{*}
+\printbibliography[heading=bibintoc]
+
+% ======================================================================
+% PHỤ LỤC
+% ======================================================================
+\begin{appendices}
+
+\chapter{CẤU HÌNH CHI TIẾT}
+
+\section{Cấu hình ModSecurity (modsecurity.conf)}
+
+\begin{lstlisting}[numbers=none,basicstyle=\footnotesize\ttfamily]
+# -- Mode ---------------------------------
+SecRuleEngine On
+
+# -- Request access ----------------------
+SecRequestBodyAccess On
+SecResponseBodyAccess On
+
+# -- Audit log --------------------------
+SecAuditEngine RelevantOnly
+SecAuditLogRelevantStatus "^(?:5|4(?!04))"
+SecAuditLogParts ABIJDEFHZ
+SecAuditLogType Serial
+SecAuditLog /var/log/modsecurity/audit.log
+
+# -- Default action ----------------------
+SecDefaultAction "phase:1,log,auditlog,pass"
+SecDefaultAction "phase:2,log,auditlog,pass"
+
+# -- Response body limit -----------------
+SecResponseBodyLimit 524288
+SecResponseBodyMimeType text/plain text/html
+
+# -- Upload limit ------------------------
+SecRequestBodyLimit 13107200
+SecRequestBodyNoFilesLimit 131072
+\end{lstlisting}
+
+\section{Cấu hình Docker Compose cho DetectionOnly}
+
+\begin{lstlisting}[numbers=none]
+  reverse-proxy:
+    image: owasp/modsecurity-crs:nginx
+    ports:
+      - "80:80"
+    environment:
+      - PARANOIA=1
+      - MODSEC_RULE_ENGINE=DetectionOnly
+      - BACKEND=http://dvwa:80
+\end{lstlisting}
+
+\chapter{PHÂN CÔNG CÔNG VIỆC}
+
+\begin{table}[H]
+\centering
+\caption{Bảng phân công công việc nhóm}
+\label{tab:work}
+\begin{tabular}{C{1cm}L{4cm}L{7cm}}
+\toprule
+\textbf{STT} & \textbf{Thành viên} & \textbf{Công việc} \\
+\midrule
+1 & Phạm Trung Hiếu & Dựng lab Docker, viết báo cáo (Ch.1--4), cấu hình WAF \\
+2 & Nguyễn Đỗ Tú & Demo kịch bản tấn công, đối chiếu TCVN (Ch.5--6) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{appendices}
+
+\end{document}

@@ -1,0 +1,412 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global/global}
+    \entry{owasp2021top10}{report}{}{}
+      \name{author}{1}{}{%
+        {{hash=b0d7a4bf1a0878d4e92cdd7461e48710}{%
+           family={{OWASP Foundation}},
+           familyi={O\bibinitperiod}}}%
+      }
+      \strng{namehash}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \strng{fullhash}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \strng{fullhashraw}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \strng{bibnamehash}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \strng{authorbibnamehash}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \strng{authornamehash}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \strng{authorfullhash}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \strng{authorfullhashraw}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \field{extraname}{1}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{OWASP Top Ten 2021: The Ten Most Critical Web Application Security Risks}
+      \field{type}{techreport}
+      \field{year}{2021}
+      \true{nocite}
+      \verb{urlraw}
+      \verb https://owasp.org/www-project-top-ten
+      \endverb
+      \verb{url}
+      \verb https://owasp.org/www-project-top-ten
+      \endverb
+    \endentry
+    \entry{owasp_modsecurity_github}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=aeabe7c5faa89f9b2b33de665ed1f0ef}{%
+           family={{OWASP ModSecurity}},
+           familyi={O\bibinitperiod}}}%
+      }
+      \strng{namehash}{aeabe7c5faa89f9b2b33de665ed1f0ef}
+      \strng{fullhash}{aeabe7c5faa89f9b2b33de665ed1f0ef}
+      \strng{fullhashraw}{aeabe7c5faa89f9b2b33de665ed1f0ef}
+      \strng{bibnamehash}{aeabe7c5faa89f9b2b33de665ed1f0ef}
+      \strng{authorbibnamehash}{aeabe7c5faa89f9b2b33de665ed1f0ef}
+      \strng{authornamehash}{aeabe7c5faa89f9b2b33de665ed1f0ef}
+      \strng{authorfullhash}{aeabe7c5faa89f9b2b33de665ed1f0ef}
+      \strng{authorfullhashraw}{aeabe7c5faa89f9b2b33de665ed1f0ef}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{ModSecurity: Open Source Web Application Firewall}
+      \field{year}{2026}
+      \true{nocite}
+      \verb{urlraw}
+      \verb https://github.com/owasp-modsecurity/ModSecurity
+      \endverb
+      \verb{url}
+      \verb https://github.com/owasp-modsecurity/ModSecurity
+      \endverb
+    \endentry
+    \entry{coreruleset_org}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=47886910a74aacc2d551b7525e71388f}{%
+           family={{OWASP CRS Project}},
+           familyi={O\bibinitperiod}}}%
+      }
+      \strng{namehash}{47886910a74aacc2d551b7525e71388f}
+      \strng{fullhash}{47886910a74aacc2d551b7525e71388f}
+      \strng{fullhashraw}{47886910a74aacc2d551b7525e71388f}
+      \strng{bibnamehash}{47886910a74aacc2d551b7525e71388f}
+      \strng{authorbibnamehash}{47886910a74aacc2d551b7525e71388f}
+      \strng{authornamehash}{47886910a74aacc2d551b7525e71388f}
+      \strng{authorfullhash}{47886910a74aacc2d551b7525e71388f}
+      \strng{authorfullhashraw}{47886910a74aacc2d551b7525e71388f}
+      \field{extraname}{1}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{OWASP ModSecurity Core Rule Set}
+      \field{year}{2026}
+      \true{nocite}
+      \verb{urlraw}
+      \verb https://coreruleset.org
+      \endverb
+      \verb{url}
+      \verb https://coreruleset.org
+      \endverb
+    \endentry
+    \entry{modsecurity_crs_docker}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=47886910a74aacc2d551b7525e71388f}{%
+           family={{OWASP CRS Project}},
+           familyi={O\bibinitperiod}}}%
+      }
+      \strng{namehash}{47886910a74aacc2d551b7525e71388f}
+      \strng{fullhash}{47886910a74aacc2d551b7525e71388f}
+      \strng{fullhashraw}{47886910a74aacc2d551b7525e71388f}
+      \strng{bibnamehash}{47886910a74aacc2d551b7525e71388f}
+      \strng{authorbibnamehash}{47886910a74aacc2d551b7525e71388f}
+      \strng{authornamehash}{47886910a74aacc2d551b7525e71388f}
+      \strng{authorfullhash}{47886910a74aacc2d551b7525e71388f}
+      \strng{authorfullhashraw}{47886910a74aacc2d551b7525e71388f}
+      \field{extraname}{2}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{modsecurity-crs-docker: Official Docker Images}
+      \field{year}{2026}
+      \true{nocite}
+      \verb{urlraw}
+      \verb https://github.com/coreruleset/modsecurity-crs-docker
+      \endverb
+      \verb{url}
+      \verb https://github.com/coreruleset/modsecurity-crs-docker
+      \endverb
+    \endentry
+    \entry{sobola2020modsecurity}{thesis}{}{}
+      \name{author}{1}{}{%
+        {{hash=c2d9d6c2532204802034578b9923d795}{%
+           family={Sobola},
+           familyi={S\bibinitperiod},
+           given={T.\bibnamedelimi D.},
+           giveni={T\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {University of Alberta}%
+      }
+      \strng{namehash}{c2d9d6c2532204802034578b9923d795}
+      \strng{fullhash}{c2d9d6c2532204802034578b9923d795}
+      \strng{fullhashraw}{c2d9d6c2532204802034578b9923d795}
+      \strng{bibnamehash}{c2d9d6c2532204802034578b9923d795}
+      \strng{authorbibnamehash}{c2d9d6c2532204802034578b9923d795}
+      \strng{authornamehash}{c2d9d6c2532204802034578b9923d795}
+      \strng{authorfullhash}{c2d9d6c2532204802034578b9923d795}
+      \strng{authorfullhashraw}{c2d9d6c2532204802034578b9923d795}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Experimental Study of ModSecurity Web Application Firewalls}
+      \field{type}{mathesis}
+      \field{year}{2020}
+      \true{nocite}
+      \verb{urlraw}
+      \verb https://era.library.ualberta.ca/items/06da4b2c-5bb3-4797-8e7f-1243c81d9e75
+      \endverb
+      \verb{url}
+      \verb https://era.library.ualberta.ca/items/06da4b2c-5bb3-4797-8e7f-1243c81d9e75
+      \endverb
+    \endentry
+    \entry{kara2022modsecurity}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=2b6cf639720fbb792f98dba3422605f7}{%
+           family={Kara},
+           familyi={K\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{2b6cf639720fbb792f98dba3422605f7}
+      \strng{fullhash}{2b6cf639720fbb792f98dba3422605f7}
+      \strng{fullhashraw}{2b6cf639720fbb792f98dba3422605f7}
+      \strng{bibnamehash}{2b6cf639720fbb792f98dba3422605f7}
+      \strng{authorbibnamehash}{2b6cf639720fbb792f98dba3422605f7}
+      \strng{authornamehash}{2b6cf639720fbb792f98dba3422605f7}
+      \strng{authorfullhash}{2b6cf639720fbb792f98dba3422605f7}
+      \strng{authorfullhashraw}{2b6cf639720fbb792f98dba3422605f7}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Applied Sciences}
+      \field{number}{13}
+      \field{title}{Log Analysis and Evaluation of DoS Attacks in ModSecurity-Based Web Application Firewalls}
+      \field{volume}{12}
+      \field{year}{2022}
+      \true{nocite}
+      \field{pages}{6460}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.3390/app12136460
+      \endverb
+    \endentry
+    \entry{karakannas2014waf}{report}{}{}
+      \name{author}{2}{}{%
+        {{hash=a41b60bb4a39a05bf7ef5c189bd8e39f}{%
+           family={Karakannas},
+           familyi={K\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod}}}%
+        {{hash=529dab95064adad7d3023bec1548a7be}{%
+           family={Thessalonikefs},
+           familyi={T\bibinitperiod},
+           given={G.},
+           giveni={G\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {University of Amsterdam}%
+      }
+      \strng{namehash}{17ca4ebe894e1f4f9d825049ea36c848}
+      \strng{fullhash}{17ca4ebe894e1f4f9d825049ea36c848}
+      \strng{fullhashraw}{17ca4ebe894e1f4f9d825049ea36c848}
+      \strng{bibnamehash}{17ca4ebe894e1f4f9d825049ea36c848}
+      \strng{authorbibnamehash}{17ca4ebe894e1f4f9d825049ea36c848}
+      \strng{authornamehash}{17ca4ebe894e1f4f9d825049ea36c848}
+      \strng{authorfullhash}{17ca4ebe894e1f4f9d825049ea36c848}
+      \strng{authorfullhashraw}{17ca4ebe894e1f4f9d825049ea36c848}
+      \field{sortinit}{8}
+      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Web Application Firewalls: Evaluation and Analysis}
+      \field{type}{techreport}
+      \field{year}{2014}
+      \true{nocite}
+      \verb{urlraw}
+      \verb https://git.hackliberty.org/Awesome-Mirrors/Awesome-WAF/raw/branch/master/papers/Web%20Application%20Firewalls%20-%20Evaluation%20and%20Analysis.pdf
+      \endverb
+      \verb{url}
+      \verb https://git.hackliberty.org/Awesome-Mirrors/Awesome-WAF/raw/branch/master/papers/Web%20Application%20Firewalls%20-%20Evaluation%20and%20Analysis.pdf
+      \endverb
+    \endentry
+    \entry{owasp_wiki_rule_eval}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=b0d7a4bf1a0878d4e92cdd7461e48710}{%
+           family={{OWASP Foundation}},
+           familyi={O\bibinitperiod}}}%
+      }
+      \strng{namehash}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \strng{fullhash}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \strng{fullhashraw}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \strng{bibnamehash}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \strng{authorbibnamehash}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \strng{authornamehash}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \strng{authorfullhash}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \strng{authorfullhashraw}{b0d7a4bf1a0878d4e92cdd7461e48710}
+      \field{extraname}{2}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{OWASP ModSecurity Rule Evaluation Framework}
+      \field{year}{2024}
+      \true{nocite}
+      \verb{urlraw}
+      \verb https://wiki.owasp.org/index.php/OWASP_ModSecurity_rule_evaluation_framework
+      \endverb
+      \verb{url}
+      \verb https://wiki.owasp.org/index.php/OWASP_ModSecurity_rule_evaluation_framework
+      \endverb
+    \endentry
+    \entry{devslop_crs_blog}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=655a276a13b57e925c9241bd338e6a0b}{%
+           family={{OWASP DevSlop}},
+           familyi={O\bibinitperiod}}}%
+      }
+      \strng{namehash}{655a276a13b57e925c9241bd338e6a0b}
+      \strng{fullhash}{655a276a13b57e925c9241bd338e6a0b}
+      \strng{fullhashraw}{655a276a13b57e925c9241bd338e6a0b}
+      \strng{bibnamehash}{655a276a13b57e925c9241bd338e6a0b}
+      \strng{authorbibnamehash}{655a276a13b57e925c9241bd338e6a0b}
+      \strng{authornamehash}{655a276a13b57e925c9241bd338e6a0b}
+      \strng{authorfullhash}{655a276a13b57e925c9241bd338e6a0b}
+      \strng{authorfullhashraw}{655a276a13b57e925c9241bd338e6a0b}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{How the OWASP ModSecurity Core Rule Set Protects Pixi}
+      \field{year}{2022}
+      \true{nocite}
+      \verb{urlraw}
+      \verb https://dev.to/devslop/how-the-owasp-modsecurity-core-rule-set-protects-the-vulnerable-web-application-pixi-by-owasp-devslop-n4d
+      \endverb
+      \verb{url}
+      \verb https://dev.to/devslop/how-the-owasp-modsecurity-core-rule-set-protects-the-vulnerable-web-application-pixi-by-owasp-devslop-n4d
+      \endverb
+    \endentry
+    \entry{dvwa_github}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=fff0e149c9a73df72b997379434562d3}{%
+           family={Digininja},
+           familyi={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{fff0e149c9a73df72b997379434562d3}
+      \strng{fullhash}{fff0e149c9a73df72b997379434562d3}
+      \strng{fullhashraw}{fff0e149c9a73df72b997379434562d3}
+      \strng{bibnamehash}{fff0e149c9a73df72b997379434562d3}
+      \strng{authorbibnamehash}{fff0e149c9a73df72b997379434562d3}
+      \strng{authornamehash}{fff0e149c9a73df72b997379434562d3}
+      \strng{authorfullhash}{fff0e149c9a73df72b997379434562d3}
+      \strng{authorfullhashraw}{fff0e149c9a73df72b997379434562d3}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Damn Vulnerable Web Application (DVWA)}
+      \field{year}{2026}
+      \true{nocite}
+      \verb{urlraw}
+      \verb https://github.com/digininja/DVWA
+      \endverb
+      \verb{url}
+      \verb https://github.com/digininja/DVWA
+      \endverb
+    \endentry
+    \entry{coraza_waf}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=7d78553368294322dd0d9899d4173680}{%
+           family={{Coraza WAF}},
+           familyi={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{7d78553368294322dd0d9899d4173680}
+      \strng{fullhash}{7d78553368294322dd0d9899d4173680}
+      \strng{fullhashraw}{7d78553368294322dd0d9899d4173680}
+      \strng{bibnamehash}{7d78553368294322dd0d9899d4173680}
+      \strng{authorbibnamehash}{7d78553368294322dd0d9899d4173680}
+      \strng{authornamehash}{7d78553368294322dd0d9899d4173680}
+      \strng{authorfullhash}{7d78553368294322dd0d9899d4173680}
+      \strng{authorfullhashraw}{7d78553368294322dd0d9899d4173680}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Coraza Web Application Firewall}
+      \field{year}{2026}
+      \true{nocite}
+      \verb{urlraw}
+      \verb https://coraza.io
+      \endverb
+      \verb{url}
+      \verb https://coraza.io
+      \endverb
+    \endentry
+    \entry{tcvn119302017}{report}{}{}
+      \name{author}{1}{}{%
+        {{hash=827d165e6be6ee2481b895dc05005652}{%
+           family={{Bộ Khoa học và Công nghệ Việt Nam}},
+           familyi={B\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {Bộ Khoa học và Công nghệ}%
+      }
+      \strng{namehash}{827d165e6be6ee2481b895dc05005652}
+      \strng{fullhash}{827d165e6be6ee2481b895dc05005652}
+      \strng{fullhashraw}{827d165e6be6ee2481b895dc05005652}
+      \strng{bibnamehash}{827d165e6be6ee2481b895dc05005652}
+      \strng{authorbibnamehash}{827d165e6be6ee2481b895dc05005652}
+      \strng{authornamehash}{827d165e6be6ee2481b895dc05005652}
+      \strng{authorfullhash}{827d165e6be6ee2481b895dc05005652}
+      \strng{authorfullhashraw}{827d165e6be6ee2481b895dc05005652}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{TCVN 11930:2017 -- Công nghệ thông tin, Các kỹ thuật an toàn, Yêu cầu cơ bản về an toàn hệ thống thông tin theo cấp độ}
+      \field{type}{techreport}
+      \field{year}{2017}
+      \true{nocite}
+    \endentry
+    \entry{ristic2010modsecurity}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=22ef0b3f9966964572b1ed2e2c1143b4}{%
+           family={Ristić},
+           familyi={R\bibinitperiod},
+           given={I.},
+           giveni={I\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Feisty Duck}%
+      }
+      \strng{namehash}{22ef0b3f9966964572b1ed2e2c1143b4}
+      \strng{fullhash}{22ef0b3f9966964572b1ed2e2c1143b4}
+      \strng{fullhashraw}{22ef0b3f9966964572b1ed2e2c1143b4}
+      \strng{bibnamehash}{22ef0b3f9966964572b1ed2e2c1143b4}
+      \strng{authorbibnamehash}{22ef0b3f9966964572b1ed2e2c1143b4}
+      \strng{authornamehash}{22ef0b3f9966964572b1ed2e2c1143b4}
+      \strng{authorfullhash}{22ef0b3f9966964572b1ed2e2c1143b4}
+      \strng{authorfullhashraw}{22ef0b3f9966964572b1ed2e2c1143b4}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{ModSecurity Handbook: The Complete Guide to the Popular Open Source Web Application Firewall}
+      \field{year}{2010}
+      \true{nocite}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

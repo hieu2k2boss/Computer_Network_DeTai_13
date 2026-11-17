@@ -1,0 +1,14 @@
+[0] Config.pm:328> INFO - This is Biber 2.21
+[1] Config.pm:331> INFO - Logfile is 'DoAn.blg'
+[110] biber-MSWIN64:342> INFO - === 
+[166] Biber.pm:421> INFO - Reading 'DoAn.bcf'
+[256] Biber.pm:999> INFO - Using all citekeys in bib section 0
+[272] Biber.pm:4487> INFO - Processing section 0
+[281] Biber.pm:4678> INFO - Looking for bibtex file 'references.bib' for section 0
+[360] bibtex.pm:1713> INFO - LaTeX decoding ...
+[370] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
+[423] UCollate.pm:68> INFO - Overriding locale 'vi-VN' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[424] UCollate.pm:68> INFO - Overriding locale 'vi-VN' defaults 'variable = shifted' with 'variable = non-ignorable'
+[424] Biber.pm:4307> INFO - Sorting list 'none/global//global/global/global' of type 'entry' with template 'none' and locale 'vi-VN'
+[435] bbl.pm:676> INFO - Writing 'DoAn.bbl' with encoding 'UTF-8'
+[438] bbl.pm:779> INFO - Output to DoAn.bbl
