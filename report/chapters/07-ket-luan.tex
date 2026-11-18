@@ -80,7 +80,21 @@ ModSecurity + CRS, PL4 & 1\,667 & 6,00 & 4,32 \\
 Mỗi yêu cầu tốn thêm khoảng 2,8~ms ở PL1 và 4,3~ms ở PL4 so với chỉ dùng nginx làm proxy; thông lượng giảm khoảng 63\% và 72\%. Với một trang động mất hàng chục ms để sinh ra, độ trễ thêm này là nhỏ, nhưng dưới tải cao WAF tiêu tốn CPU đáng kể và phải được tính khi định cỡ hệ thống. Số liệu đo trên một máy 8 nhân chạy chung các dịch vụ khác, chỉ có ý nghĩa so sánh tương đối.
 
 \section{Hướng phát triển}
-\todo{Đẩy audit log về Wazuh/Grafana (tích hợp nhóm khác), dùng Coraza trên Caddy/Envoy, kết hợp rate limiting/CrowdSec.}
+\begin{itemize}
+  \item \textbf{Tập trung nhật ký:} đẩy audit log JSON về Wazuh hoặc Loki/Grafana của nhóm khác, giữ tối thiểu 03 tháng và cảnh báo theo luật 949110, để đáp ứng mục 7.2.1.4 của TCVN 11930:2017.
+  \item \textbf{Chống dò quét và giới hạn tốc độ:} kết hợp \texttt{limit\_req}/\texttt{limit\_conn} của nginx hoặc CrowdSec để chặn theo IP nguồn, bù cho phần CRS không làm được (giới hạn kết nối, brute force).
+  \item \textbf{Thử Coraza:} chạy cùng bộ CRS và cùng \texttt{attack.sh} trên Coraza (Caddy hoặc Envoy) để so sánh tỷ lệ chặn và hiệu năng với ModSecurity v3.
+  \item \textbf{Mở rộng kịch bản:} RFI, CSRF, SSRF, XXE và DVWA ở mức \textit{medium}/\textit{high}; đo hiệu năng trên máy riêng với trang động thay vì tệp tĩnh.
+\end{itemize}
 
 \section{Kết luận}
-\todo{Tóm tắt kết quả đạt được.}
+Nhóm đã dựng được lab cô lập Nginx + ModSecurity v3 + OWASP CRS 4.30.0 bảo vệ DVWA, khởi chạy lại bằng một lệnh \texttt{docker compose up -d} với image ghim theo digest, và tự động hóa việc tấn công, so sánh, thu bằng chứng bằng \texttt{attack.sh}. Kết quả chính:
+\begin{itemize}
+  \item Ở PL1, WAF chặn cả 4/4 kịch bản SQLi, XSS, LFI, Command Injection vốn khai thác thành công khi không có WAF; ở DetectionOnly cùng các luật đó được ghi log nhưng yêu cầu vẫn đi qua.
+  \item Với 15 biến thể payload, PL1 chặn 11/15. Bốn biến thể command injection dùng lệnh ngắn (\texttt{id}, \texttt{pwd}) lọt qua và chạy được; phải lên PL3 mới chặn đủ 15/15.
+  \item Trên 10 thao tác hợp lệ, PL1 không chặn nhầm; PL2 chặn nhầm 1, PL3 chặn nhầm 3 (còn 1 sau một dòng luật loại trừ), PL4 chặn nhầm 6.
+  \item Mỗi yêu cầu tốn thêm khoảng 2,8~ms ở PL1 và 4,3~ms ở PL4 so với nginx không bật WAF.
+  \item Đối chiếu 11 điều khoản TCVN 11930:2017: đáp ứng 2, một phần 7, không đáp ứng 2. WAF phủ tốt yêu cầu chống tấn công ứng dụng nhưng cần thêm SIEM và giới hạn kết nối mới đủ cho cấp độ 3.
+\end{itemize}
+
+Từ quá trình làm lab, nhóm rút ra bốn bài học vận hành. Thứ nhất, luôn chạy DetectionOnly trước rồi mới bật chặn, vì chỉ lưu lượng thật mới cho thấy luật nào chặn nhầm. Thứ hai, xử lý chặn nhầm bằng luật loại trừ hẹp nhất có thể (một luật, một biến), không tắt cả nhóm luật. Thứ ba, chọn paranoia level là chọn giữa bỏ sót và chặn nhầm: PL1 phù hợp đa số ứng dụng, chỉ nên tăng khi có người duy trì luật loại trừ. Cuối cùng, WAF là một lớp trong phòng thủ nhiều lớp, giúp giảm rủi ro trong lúc chờ sửa mã chứ không thay thế việc viết ứng dụng an toàn.

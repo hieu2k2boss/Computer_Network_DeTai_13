@@ -1,10 +1,33 @@
 % Yêu cầu 1 — Ngân sách: ~4 trang
 \chapter{Kiến trúc và nguyên lý hoạt động}\label{chap:kientruc}
 
+\section{Bốn dạng tấn công trong kịch bản demo}\label{sec:tancong}
+Cả bốn dạng tấn công nhóm trình diễn có chung một nguyên nhân gốc: ứng dụng ghép dữ liệu do người dùng gửi lên vào một ngữ cảnh có cú pháp riêng (câu SQL, trang HTML, đường dẫn tệp, lệnh shell) mà không tách bạch dữ liệu với mã. Bảng~\ref{tab:tancong} tóm tắt trang DVWA tương ứng, hậu quả và cách sửa tận gốc ở mã nguồn.
+
+\begin{table}[!htb]
+\centering
+\caption{Bốn dạng tấn công: trang DVWA, hậu quả và cách sửa ở mã nguồn}
+\label{tab:tancong}
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}llXX@{}}
+\toprule
+\textbf{Dạng} & \textbf{Trang DVWA} & \textbf{Hậu quả} & \textbf{Sửa tại mã nguồn} \\ \midrule
+SQLi & SQL Injection & Đọc/sửa/xóa dữ liệu & Prepared statement, tham số ràng buộc \\
+XSS & XSS (Reflected) & Chạy JavaScript trên trình duyệt nạn nhân, đánh cắp phiên & Mã hóa đầu ra theo ngữ cảnh (\texttt{htmlspecialchars}) \\
+LFI & File Inclusion & Lộ tệp hệ thống, mã nguồn, mật khẩu CSDL & Danh sách tệp cho phép; \texttt{realpath} và kiểm tra thư mục gốc \\
+CMDi & Command Injection & Thực thi lệnh tùy ý, chiếm máy chủ & Không gọi shell; nếu bắt buộc, tách tham số và kiểm tra theo danh sách cho phép \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+WAF không sửa được các lỗi này; nó chỉ nhận diện dấu hiệu khai thác trong yêu cầu và chặn trước khi tới ứng dụng. Vì vậy WAF là một lớp trong phòng thủ nhiều lớp, không thay thế việc sửa mã.
+
 \section{Tổng quan về tường lửa ứng dụng web}
 Tường lửa ứng dụng web (WAF) là thành phần kiểm tra nội dung giao dịch HTTP/HTTPS giữa người dùng và ứng dụng web, nhằm phát hiện và ngăn chặn các tấn công ở tầng ứng dụng như SQL Injection, Cross-Site Scripting hay Local File Inclusion~\cite{owasptop10}. Khác với tường lửa mạng chỉ xét địa chỉ IP, cổng và trạng thái kết nối, WAF phân tích cú pháp yêu cầu HTTP: đường dẫn, tham số, header, cookie và thân yêu cầu.
 
-WAF có thể được triển khai theo ba mô hình: \textbf{reverse proxy} (WAF đứng trước ứng dụng, kết thúc TLS, kiểm tra rồi mới chuyển tiếp yêu cầu; đây là mô hình nhóm dùng trong lab), \textbf{nhúng} (chạy như một module trong máy chủ web Apache, Nginx) và \textbf{ngoài luồng} (nhận bản sao lưu lượng để phát hiện, không chặn trực tiếp).
+WAF có thể được triển khai theo ba mô hình: \textbf{reverse proxy} (WAF đứng trước ứng dụng, kết thúc TLS, kiểm tra rồi mới chuyển tiếp yêu cầu; đây là mô hình nhóm dùng trong lab), \textbf{nhúng} (chạy như một module trong máy chủ web Apache, Nginx) và \textbf{ngoài luồng} (nhận bản sao lưu lượng để phát hiện, không chặn trực tiếp). Các dịch vụ WAF đám mây (Cloudflare, AWS WAF) thực chất là reverse proxy đặt ở biên mạng của nhà cung cấp, lưu lượng được chuyển hướng qua đó bằng DNS (so sánh ở Chương~\ref{chap:sosanh}).
+
+Nhóm chọn mô hình reverse proxy vì: WAF tách biệt hoàn toàn khỏi DVWA, không phải sửa ứng dụng; đổi chế độ, paranoia level hay luật loại trừ chỉ cần khởi động lại container WAF; và có sẵn image Docker chính thức \texttt{owasp/modsecurity-crs:nginx} do dự án CRS duy trì.
 
 Về chính sách, WAF có thể theo \textbf{mô hình âm} (negative security model: chặn những gì khớp mẫu tấn công đã biết) hoặc \textbf{mô hình dương} (positive security model: chỉ cho phép những gì đã được khai báo hợp lệ). Bộ OWASP CRS chủ yếu theo mô hình âm, với các luật tổng quát không gắn với một ứng dụng cụ thể.
 

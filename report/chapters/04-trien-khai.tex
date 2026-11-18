@@ -1,50 +1,117 @@
 % Ngân sách: ~3 trang
-\chapter{Triển khai hệ thống}
+\chapter{Triển khai hệ thống}\label{chap:trienkhai}
 
 \section{Mô hình lab}
-\todo{Mô tả topology, địa chỉ IP, mạng Docker cô lập. Sửa hình nếu khác thực tế.}
+Lab gồm ba container trên một máy (Hình~\ref{fig:topology}), chia vào hai mạng Docker:
+\begin{itemize}
+  \item \textbf{\texttt{edge}} (mạng bridge thường): WAF và DVWA. Máy chủ chỉ công bố hai cổng trên \texttt{127.0.0.1}: \texttt{8080} vào WAF và \texttt{8081} vào thẳng DVWA. Đường \texttt{8081} không qua WAF, dùng làm đối chứng để chứng minh lỗ hổng có thật.
+  \item \textbf{\texttt{backend}} (\texttt{internal: true}): WAF, DVWA và MariaDB. Docker không tạo đường ra ngoài cho mạng này nên CSDL không gửi được gói tin ra Internet.
+\end{itemize}
+Địa chỉ IP do Docker cấp động; các container gọi nhau bằng tên dịch vụ (\texttt{dvwa}, \texttt{db}) nên cấu hình không phụ thuộc IP.
+
 \begin{figure}[!htb]
 \centering
-\begin{tikzpicture}[node distance=12mm, box/.style={draw,rounded corners,minimum width=2.8cm,minimum height=10mm,font=\footnotesize,align=center}]
-  \node[box] (att) {Máy tấn công\\(curl, sqlmap, nikto)};
-  \node[box,right=of att,fill=orange!15] (waf) {WAF\\Nginx + ModSecurity\\+ OWASP CRS};
-  \node[box,right=of waf] (dvwa) {DVWA\\(Apache + PHP)};
-  \node[box,below=of dvwa] (db) {MariaDB};
-  \node[box,below=of waf] (log) {Audit log\\(JSON)};
-  \draw[-Stealth] (att) -- node[above,font=\scriptsize]{:8080} (waf);
-  \draw[-Stealth] (waf) -- (dvwa);
+\begin{tikzpicture}[box/.style={draw,rounded corners,minimum width=2.4cm,minimum height=10mm,font=\footnotesize,align=center}]
+  \node[box] (att) at (-0.8,0) {Máy chủ lab\\(trình duyệt, curl,\\\texttt{attack.sh})};
+  \node[box,fill=orange!15] (waf) at (5.4,0) {WAF\\Nginx + ModSecurity\\+ OWASP CRS};
+  \node[box] (dvwa) at (9.4,0) {DVWA\\(Apache + PHP)};
+  \node[box] (db) at (9.4,-2) {MariaDB};
+  \node[box] (log) at (-0.8,-2) {Audit log JSON\\(\texttt{docker logs})};
+  \draw[-Stealth] (att) -- node[pos=0.35,above,font=\scriptsize]{127.0.0.1:8080} (waf);
+  \draw[-Stealth] (waf) -- node[above,font=\scriptsize]{:80} (dvwa);
+  \draw[-Stealth,dashed] (att.north) -- ++(0,0.9) -| node[pos=0.25,above,font=\scriptsize]{127.0.0.1:8081 (đối chứng, không WAF)} (dvwa.north);
   \draw[-Stealth] (dvwa) -- (db);
-  \draw[-Stealth,dashed] (waf) -- (log);
-  \node[draw,dotted,inner sep=3mm,fit=(att)(waf)(dvwa)(db)(log),label={[font=\scriptsize]below:Docker network nội bộ (cô lập)}] {};
+  \draw[-Stealth,dashed] (waf.south west) -- (log.north east);
+  \node[draw,dotted,inner sep=2mm,fit=(waf)(dvwa),label={[font=\scriptsize,anchor=north west]south west:\texttt{edge}}] {};
+  \node[draw,densely dashed,inner sep=7mm,fit=(waf)(dvwa)(db),label={[font=\scriptsize]below:\texttt{backend} (internal, không ra Internet)}] {};
 \end{tikzpicture}
 \caption{Mô hình lab triển khai}
 \label{fig:topology}
 \end{figure}
 
 \section{Thành phần và phiên bản}
+Mọi image được ghim theo digest SHA-256 trong \texttt{docker-compose.yml}, nên chạy lại ở thời điểm khác vẫn cho ra đúng các phiên bản ở Bảng~\ref{tab:components} (đọc từ trường \texttt{producer} của audit log).
+
 \begin{table}[!htb]
 \centering
 \caption{Thành phần phần mềm}
 \label{tab:components}
+\footnotesize
 \begin{tabularx}{\linewidth}{@{}lllX@{}}
 \toprule
 \textbf{Thành phần} & \textbf{Image} & \textbf{Phiên bản} & \textbf{Vai trò} \\ \midrule
-WAF & \todo{} & \todo{} & Reverse proxy, lọc HTTP \\
-DVWA & \todo{} & \todo{} & Ứng dụng web có lỗ hổng \\
-CSDL & \todo{} & \todo{} & Dữ liệu DVWA \\
+WAF & \texttt{owasp/modsecurity-crs:nginx} & ModSecurity v3.0.17, & Reverse proxy, lọc HTTP \\
+ & & ModSecurity-nginx v1.0.4, & \\
+ & & OWASP CRS 4.30.0 & \\
+DVWA & \texttt{ghcr.io/digininja/dvwa} & ghim theo digest & Ứng dụng web có lỗ hổng \\
+CSDL & \texttt{mariadb:11.4} & 11.4 & Dữ liệu DVWA \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \section{Script cài đặt}
-Toàn bộ cấu hình lab nằm tại kho mã \repourl.
-\todo{Trích đoạn \texttt{docker-compose.yml} chính, giải thích biến môi trường quan trọng (PARANOIA, ANOMALY\_INBOUND, MODSEC\_RULE\_ENGINE...).}
-\begin{lstlisting}[caption={Trích đoạn docker-compose.yml},label={lst:compose}]
-# TODO: paste real snippet from repo
+Toàn bộ cấu hình lab nằm tại kho mã \repourl{} (thư mục \texttt{lab/}). Đoạn mã~\ref{lst:compose} là phần khai báo dịch vụ WAF.
+
+\begin{lstlisting}[caption={Trích đoạn \texttt{lab/docker-compose.yml} (dịch vụ WAF)},label={lst:compose}]
+waf:
+  image: owasp/modsecurity-crs:nginx@sha256:c95914e1...
+  environment:
+    BACKEND: http://dvwa:80
+    MODSEC_RULE_ENGINE: ${MODSEC_RULE_ENGINE:-On}   # On | DetectionOnly | Off
+    BLOCKING_PARANOIA: ${BLOCKING_PARANOIA:-1}      # 1..4
+    ANOMALY_INBOUND: ${ANOMALY_INBOUND:-5}
+    ANOMALY_OUTBOUND: ${ANOMALY_OUTBOUND:-4}
+    MODSEC_AUDIT_ENGINE: RelevantOnly
+    MODSEC_AUDIT_LOG_FORMAT: JSON
+    MODSEC_AUDIT_LOG: /dev/stdout
+  volumes:   # luat loai tru, nap sau CRS
+    - ${EXCLUSION_FILE:-./rules/none.conf}:/etc/.../RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf:ro
+  ports: ["127.0.0.1:${WAF_PORT:-8080}:8080"]
+  networks: [edge, backend]
 \end{lstlisting}
 
+Image của CRS sinh tệp cấu hình ModSecurity từ biến môi trường lúc khởi động, nên mọi thí nghiệm chỉ cần đổi biến rồi chạy \texttt{docker compose up -d waf}:
+\begin{itemize}
+  \item \path{MODSEC_RULE_ENGINE}, \path{BLOCKING_PARANOIA}, \path{ANOMALY_INBOUND/OUTBOUND}: gán \texttt{SecRuleEngine}, \texttt{tx.blocking\_paranoia\_level} và hai ngưỡng điểm (mặc định 5 và 4) của CRS~4.
+  \item \texttt{MODSEC\_AUDIT\_*}: ghi audit log dạng JSON ra stdout của container, đọc bằng \texttt{docker compose logs waf} và dễ chuyển tiếp sang SIEM.
+  \item \texttt{EXCLUSION\_FILE}: tệp luật loại trừ được gắn vào vị trí \texttt{RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf}, tức nạp sau toàn bộ CRS (mục~\ref{sec:tinhchinh}).
+\end{itemize}
+
 \section{Cấu hình WAF}
-\todo{Bật SecRuleEngine, cấu hình audit log JSON, paranoia level đã chọn, các luật tùy chỉnh/exclusion.}
+Đoạn mã~\ref{lst:modsecconf} là các chỉ thị có hiệu lực, đọc trong container khi chạy cấu hình mặc định.
+
+\begin{lstlisting}[caption={Cấu hình ModSecurity và CRS có hiệu lực trong container WAF},label={lst:modsecconf}]
+SecRuleEngine On
+SecRequestBodyAccess on
+SecResponseBodyAccess on
+SecAuditEngine RelevantOnly
+SecAuditLogRelevantStatus "^(?:5|4(?!04))"
+SecAuditLogParts ABIJDEFHZ
+SecAuditLogFormat JSON
+SecAuditLog /dev/stdout
+# crs-setup.conf
+setvar:tx.blocking_paranoia_level=1
+setvar:tx.inbound_anomaly_score_threshold=5
+setvar:tx.outbound_anomaly_score_threshold=4
+\end{lstlisting}
+
+Bật \texttt{SecResponseBodyAccess} cho phép các luật pha 4 (nhóm 950--959) phát hiện rò rỉ thông tin trong phản hồi. \texttt{SecAuditEngine RelevantOnly} kết hợp \texttt{SecAuditLogRelevantStatus} chỉ ghi các giao dịch có luật khớp hoặc trả mã 5xx/4xx (trừ 404), tránh log phình to vì lưu lượng bình thường. Kịch bản chính dùng PL1 không có luật loại trừ; PL2--PL4 và tệp \texttt{lab/rules/dvwa-exclusions.conf} chỉ dùng trong thí nghiệm ở Chương~\ref{chap:hanche}.
 
 \section{Kiểm tra hoạt động}
-\todo{Lệnh \texttt{docker compose up -d}, kiểm tra request hợp lệ đi qua (ảnh chụp).}
+Đoạn mã~\ref{lst:check} là kết quả khởi động lab và kiểm tra nhanh. Yêu cầu hợp lệ đi qua WAF bình thường, yêu cầu mang payload SQLi bị chặn, cổng WAF không truy cập được từ địa chỉ LAN của máy, và container CSDL không ra được Internet.
+
+\begin{lstlisting}[language=bash,caption={Khởi động và kiểm tra lab},label={lst:check}]
+$ cd lab && docker compose up -d && docker compose ps
+db     Up (healthy)
+dvwa   Up            127.0.0.1:8081->80/tcp
+waf    Up (healthy)  127.0.0.1:8080->8080/tcp
+$ curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8080/login.php
+200
+$ curl -s -o /dev/null -w '%{http_code}\n' \
+    "http://127.0.0.1:8080/login.php?id=1%27%20OR%20%271%27%3D%271"
+403
+$ curl -m 3 http://<IP-LAN-cua-may>:8080/     # tu dia chi LAN
+curl: (7) Failed to connect                    # cong chi bind 127.0.0.1
+$ docker compose exec db bash -c '</dev/tcp/1.1.1.1/53'
+bash: connect: Network is unreachable          # mang backend internal
+\end{lstlisting}
