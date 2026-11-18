@@ -23,7 +23,7 @@ CMDi & Command Injection & Thực thi lệnh tùy ý, chiếm máy chủ & Khôn
 WAF không sửa được các lỗi này; nó chỉ nhận diện dấu hiệu khai thác trong yêu cầu và chặn trước khi tới ứng dụng. Vì vậy WAF là một lớp trong phòng thủ nhiều lớp, không thay thế việc sửa mã.
 
 \section{Tổng quan về tường lửa ứng dụng web}
-Tường lửa ứng dụng web (WAF) là thành phần kiểm tra nội dung giao dịch HTTP/HTTPS giữa người dùng và ứng dụng web, nhằm phát hiện và ngăn chặn các tấn công ở tầng ứng dụng như SQL Injection, Cross-Site Scripting hay Local File Inclusion~\cite{owasptop10}. Khác với tường lửa mạng chỉ xét địa chỉ IP, cổng và trạng thái kết nối, WAF phân tích cú pháp yêu cầu HTTP: đường dẫn, tham số, header, cookie và thân yêu cầu.
+Tường lửa ứng dụng web (WAF) là thành phần kiểm tra nội dung giao dịch HTTP/HTTPS giữa người dùng và ứng dụng web, phân tích đường dẫn, tham số, header, cookie và thân yêu cầu để phát hiện và ngăn chặn tấn công tầng ứng dụng~\cite{owasptop10}.
 
 WAF có thể được triển khai theo ba mô hình: \textbf{reverse proxy} (WAF đứng trước ứng dụng, kết thúc TLS, kiểm tra rồi mới chuyển tiếp yêu cầu; đây là mô hình nhóm dùng trong lab), \textbf{nhúng} (chạy như một module trong máy chủ web Apache, Nginx) và \textbf{ngoài luồng} (nhận bản sao lưu lượng để phát hiện, không chặn trực tiếp). Các dịch vụ WAF đám mây (Cloudflare, AWS WAF) thực chất là reverse proxy đặt ở biên mạng của nhà cung cấp, lưu lượng được chuyển hướng qua đó bằng DNS (so sánh ở Chương~\ref{chap:sosanh}).
 
@@ -63,22 +63,10 @@ SecRule ARGS "@detectSQLi" \
 
 Luật trong Đoạn mã~\ref{lst:seclang} kiểm tra mọi tham số ở pha 2, giải mã URL trước khi phân tích, và nếu phát hiện SQLi thì ghi log và cộng điểm bất thường thay vì chặn ngay. Cách cộng điểm này là nền tảng của cơ chế anomaly scoring trong CRS.
 
-Bên cạnh luật, một số chỉ thị cấu hình quan trọng:
-\begin{itemize}
-  \item \texttt{SecRuleEngine On | Off | DetectionOnly}: bật chặn, tắt, hoặc chỉ phát hiện.
-  \item \texttt{SecRequestBodyAccess} / \texttt{SecResponseBodyAccess}: cho phép kiểm tra thân yêu cầu / phản hồi.
-  \item \texttt{SecAuditEngine}, \texttt{SecAuditLogParts}, \texttt{SecAuditLogFormat}: điều khiển nhật ký kiểm toán (audit log), có thể xuất dạng JSON để đưa vào hệ thống SIEM.
-\end{itemize}
+Các chỉ thị cấu hình khác (\texttt{SecRuleEngine}, \texttt{SecRequestBodyAccess}, \texttt{SecAuditLog*}) quyết định chế độ chặn, phần dữ liệu được kiểm tra và cách ghi audit log; giá trị cụ thể trong lab ở mục~\ref{sec:cauhinhwaf}.
 
 \subsection{Các pha xử lý giao dịch HTTP}
-ModSecurity chia mỗi giao dịch thành năm pha (Hình~\ref{fig:phases}); mỗi luật được gán vào một pha qua hành động \texttt{phase}:
-\begin{enumerate}
-  \item \textbf{Request headers:} ngay sau khi nhận xong header yêu cầu. Phù hợp với luật về phương thức, URI, header.
-  \item \textbf{Request body:} sau khi đọc thân yêu cầu (form, JSON, multipart). Phần lớn luật phát hiện tấn công chạy ở pha này vì đã có đủ tham số.
-  \item \textbf{Response headers:} trước khi gửi header phản hồi về người dùng.
-  \item \textbf{Response body:} kiểm tra nội dung phản hồi, ví dụ phát hiện rò rỉ thông báo lỗi SQL hay mã nguồn.
-  \item \textbf{Logging:} sau khi giao dịch kết thúc; chỉ ghi log, không thể chặn.
-\end{enumerate}
+ModSecurity chia mỗi giao dịch thành năm pha (Hình~\ref{fig:phases}); mỗi luật được gán vào một pha qua hành động \texttt{phase}. Pha 1 (request headers) kiểm tra phương thức, URI, header; pha 2 (request body) có đủ tham số form, JSON, multipart nên phần lớn luật phát hiện tấn công chạy ở đây; pha 3--4 kiểm tra header và nội dung phản hồi, ví dụ phát hiện rò rỉ thông báo lỗi SQL hay mã nguồn; pha 5 chỉ ghi log sau khi giao dịch kết thúc, không thể chặn.
 
 \begin{figure}[!htb]
 \centering
@@ -107,12 +95,7 @@ ModSecurity chia mỗi giao dịch thành năm pha (Hình~\ref{fig:phases}); m�
 \end{figure}
 
 \section{Coraza}
-OWASP Coraza là một WAF mã nguồn mở viết bằng Go, cài đặt lại bộ máy SecLang của ModSecurity~\cite{coraza}. Coraza dùng cùng cú pháp luật và chạy được nguyên bộ OWASP CRS, nên chính sách viết cho ModSecurity có thể chuyển sang Coraza mà gần như không phải sửa. Khác biệt chính:
-\begin{itemize}
-  \item \textbf{Ngôn ngữ và an toàn bộ nhớ:} Go loại bỏ nhiều lớp lỗi bộ nhớ thường gặp ở mã C/C++.
-  \item \textbf{Tích hợp:} Coraza là thư viện Go, nhúng trực tiếp vào ứng dụng Go hoặc dùng qua các tích hợp với Caddy, Envoy/Istio (proxy-wasm), HAProxy (SPOA), thay vì connector cho Nginx/Apache.
-  \item \textbf{Tình trạng dự án:} Coraza được phát triển tích cực trong hệ sinh thái cloud-native, trong khi ModSecurity v3 hiện chủ yếu được sửa lỗi và vá bảo mật.
-\end{itemize}
+OWASP Coraza là một WAF mã nguồn mở viết bằng Go, cài đặt lại bộ máy SecLang của ModSecurity~\cite{coraza}. Coraza dùng cùng cú pháp luật và chạy được nguyên bộ OWASP CRS, nên chính sách viết cho ModSecurity có thể chuyển sang Coraza mà gần như không phải sửa. Khác biệt chính: Coraza viết bằng Go nên tránh được nhiều lớp lỗi bộ nhớ của mã C/C++; Coraza là thư viện nhúng trực tiếp vào ứng dụng Go hoặc dùng qua Caddy, Envoy/Istio (proxy-wasm), HAProxy (SPOA) thay vì connector Nginx/Apache; và dự án được phát triển tích cực trong hệ sinh thái cloud-native, trong khi ModSecurity v3 hiện chủ yếu được sửa lỗi, vá bảo mật.
 Vì hai phần mềm dùng chung SecLang và CRS, các nguyên lý trình bày ở mục này và mục~\ref{sec:crs} áp dụng cho cả hai. Lab của nhóm dùng ModSecurity v3 trên Nginx.
 
 \section{OWASP Core Rule Set}\label{sec:crs}
@@ -145,17 +128,8 @@ CRS mặc định hoạt động theo cơ chế chấm điểm. Mỗi luật khi
 Cơ chế này có hai ưu điểm. Thứ nhất, một yêu cầu chỉ khớp một luật nhẹ (ví dụ NOTICE) sẽ không bị chặn, giảm chặn nhầm. Thứ hai, quản trị viên có thể điều chỉnh độ nhạy bằng một tham số duy nhất là ngưỡng, và đọc được trong log vì sao một yêu cầu bị chặn.
 
 \subsection{Paranoia level}
-Mỗi luật CRS được gắn một mức paranoia (PL) từ 1 đến 4:
-\begin{itemize}
-  \item \textbf{PL1} (mặc định): luật chắc chắn, rất ít chặn nhầm; phù hợp hầu hết ứng dụng.
-  \item \textbf{PL2}: thêm luật bắt các biến thể tấn công khó hơn; bắt đầu cần tinh chỉnh.
-  \item \textbf{PL3, PL4}: luật rất chặt (ví dụ hạn chế ký tự đặc biệt), phát hiện tốt hơn nhưng chặn nhầm nhiều, đòi hỏi viết luật loại trừ cho từng ứng dụng.
-\end{itemize}
+Mỗi luật CRS được gắn một mức paranoia (PL) từ 1 đến 4. PL1 (mặc định) chỉ gồm luật chắc chắn, rất ít chặn nhầm; PL2 thêm luật bắt biến thể khó hơn và bắt đầu cần tinh chỉnh; PL3, PL4 rất chặt (ví dụ hạn chế ký tự đặc biệt), phát hiện tốt hơn nhưng chặn nhầm nhiều, đòi hỏi luật loại trừ riêng cho từng ứng dụng.
 CRS~4 dùng biến \texttt{tx.blocking\_paranoia\_level} để chọn mức luật được phép góp điểm chặn, và \texttt{tx.detection\_paranoia\_level} để chạy thêm các luật ở mức cao hơn nhưng chỉ ghi log. Nhờ đó có thể quan sát tác động của một mức cao hơn trên lưu lượng thật trước khi bật chặn.
 
 \subsection{Chế độ DetectionOnly và Blocking}
-Chỉ thị \texttt{SecRuleEngine} quyết định WAF có thực thi hành động chặn hay không:
-\begin{itemize}
-  \item \textbf{DetectionOnly:} mọi luật vẫn được đánh giá và ghi log, nhưng hành động ngắt (\texttt{deny}, \texttt{block}) không được thực thi. Quy trình khuyến nghị là chạy chế độ này với PL1 khi mới triển khai, thu thập các trường hợp chặn nhầm và viết luật loại trừ, rồi mới chuyển sang Blocking.
-  \item \textbf{On (Blocking):} yêu cầu vượt ngưỡng bị chặn, mặc định trả về mã 403.
-\end{itemize}
+Chỉ thị \texttt{SecRuleEngine} quyết định WAF có thực thi hành động chặn hay không. Ở \textbf{DetectionOnly}, mọi luật vẫn được đánh giá và ghi log nhưng hành động ngắt (\texttt{deny}, \texttt{block}) không được thực thi; ở \textbf{On} (Blocking), yêu cầu vượt ngưỡng bị chặn, mặc định trả 403. Quy trình khuyến nghị là chạy DetectionOnly với PL1 khi mới triển khai, thu thập các trường hợp chặn nhầm, viết luật loại trừ, rồi mới chuyển sang Blocking.

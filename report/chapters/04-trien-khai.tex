@@ -2,11 +2,7 @@
 \chapter{Triển khai hệ thống}\label{chap:trienkhai}
 
 \section{Mô hình lab}
-Lab gồm ba container trên một máy (Hình~\ref{fig:topology}), chia vào hai mạng Docker:
-\begin{itemize}
-  \item \textbf{\texttt{edge}} (mạng bridge thường): WAF và DVWA. Máy chủ chỉ công bố hai cổng trên \texttt{127.0.0.1}: \texttt{8080} vào WAF và \texttt{8081} vào thẳng DVWA. Đường \texttt{8081} không qua WAF, dùng làm đối chứng để chứng minh lỗ hổng có thật.
-  \item \textbf{\texttt{backend}} (\texttt{internal: true}): WAF, DVWA và MariaDB. Docker không tạo đường ra ngoài cho mạng này nên CSDL không gửi được gói tin ra Internet.
-\end{itemize}
+Lab gồm ba container trên một máy (Hình~\ref{fig:topology}), chia vào hai mạng Docker. Mạng \texttt{edge} (bridge thường) chứa WAF và DVWA; máy chủ chỉ công bố hai cổng trên \texttt{127.0.0.1}: \texttt{8080} vào WAF và \texttt{8081} vào thẳng DVWA, đường không qua WAF dùng làm đối chứng để chứng minh lỗ hổng có thật. Mạng \texttt{backend} (\texttt{internal: true}) chứa cả ba container; Docker không tạo đường ra ngoài cho mạng này nên CSDL không gửi được gói tin ra Internet.
 Địa chỉ IP do Docker cấp động; các container gọi nhau bằng tên dịch vụ (\texttt{dvwa}, \texttt{db}) nên cấu hình không phụ thuộc IP.
 
 \begin{figure}[!htb]
@@ -30,24 +26,7 @@ Lab gồm ba container trên một máy (Hình~\ref{fig:topology}), chia vào ha
 \end{figure}
 
 \section{Thành phần và phiên bản}
-Mọi image được ghim theo digest SHA-256 trong \texttt{docker-compose.yml}, nên chạy lại ở thời điểm khác vẫn cho ra đúng các phiên bản ở Bảng~\ref{tab:components} (đọc từ trường \texttt{producer} của audit log).
-
-\begin{table}[!htb]
-\centering
-\caption{Thành phần phần mềm}
-\label{tab:components}
-\footnotesize
-\begin{tabularx}{\linewidth}{@{}lllX@{}}
-\toprule
-\textbf{Thành phần} & \textbf{Image} & \textbf{Phiên bản} & \textbf{Vai trò} \\ \midrule
-WAF & \texttt{owasp/modsecurity-crs:nginx} & ModSecurity v3.0.17, & Reverse proxy, lọc HTTP \\
- & & ModSecurity-nginx v1.0.4, & \\
- & & OWASP CRS 4.30.0 & \\
-DVWA & \texttt{ghcr.io/digininja/dvwa} & ghim theo digest & Ứng dụng web có lỗ hổng \\
-CSDL & \texttt{mariadb:11.4} & 11.4 & Dữ liệu DVWA \\
-\bottomrule
-\end{tabularx}
-\end{table}
+WAF dùng image \texttt{owasp/modsecurity-crs:nginx} gồm ModSecurity v3.0.17, connector ModSecurity-nginx v1.0.4 và OWASP CRS 4.30.0 (đọc từ trường \texttt{producer} của audit log); DVWA dùng \texttt{ghcr.io/digininja/dvwa}; CSDL là \texttt{mariadb:11.4}. Mọi image được ghim theo digest SHA-256 trong \texttt{docker-compose.yml}, nên chạy lại ở thời điểm khác vẫn cho ra đúng các phiên bản này.
 
 \section{Script cài đặt}
 Toàn bộ cấu hình lab nằm tại kho mã \repourl{} (thư mục \texttt{lab/}). Đoạn mã~\ref{lst:compose} là phần khai báo dịch vụ WAF.
@@ -77,23 +56,8 @@ Image của CRS sinh tệp cấu hình ModSecurity từ biến môi trường l�
   \item \texttt{EXCLUSION\_FILE}: tệp luật loại trừ được gắn vào vị trí \texttt{RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf}, tức nạp sau toàn bộ CRS (mục~\ref{sec:tinhchinh}).
 \end{itemize}
 
-\section{Cấu hình WAF}
-Đoạn mã~\ref{lst:modsecconf} là các chỉ thị có hiệu lực, đọc trong container khi chạy cấu hình mặc định.
-
-\begin{lstlisting}[caption={Cấu hình ModSecurity và CRS có hiệu lực trong container WAF},label={lst:modsecconf}]
-SecRuleEngine On
-SecRequestBodyAccess on
-SecResponseBodyAccess on
-SecAuditEngine RelevantOnly
-SecAuditLogRelevantStatus "^(?:5|4(?!04))"
-SecAuditLogParts ABIJDEFHZ
-SecAuditLogFormat JSON
-SecAuditLog /dev/stdout
-# crs-setup.conf
-setvar:tx.blocking_paranoia_level=1
-setvar:tx.inbound_anomaly_score_threshold=5
-setvar:tx.outbound_anomaly_score_threshold=4
-\end{lstlisting}
+\section{Cấu hình WAF}\label{sec:cauhinhwaf}
+Kiểm tra trong container sau khi khởi động với cấu hình mặc định, các chỉ thị có hiệu lực là: \texttt{SecRuleEngine On}, \texttt{SecRequestBodyAccess on}, \texttt{SecResponseBodyAccess on}, \texttt{SecAuditEngine RelevantOnly} với \path{SecAuditLogRelevantStatus "^(?:5|4(?!04))"}, \texttt{SecAuditLogFormat JSON}; trong \texttt{crs-setup.conf}: \texttt{tx.blocking\_paranoia\_level=1}, ngưỡng inbound 5, outbound 4.
 
 Bật \texttt{SecResponseBodyAccess} cho phép các luật pha 4 (nhóm 950--959) phát hiện rò rỉ thông tin trong phản hồi. \texttt{SecAuditEngine RelevantOnly} kết hợp \texttt{SecAuditLogRelevantStatus} chỉ ghi các giao dịch có luật khớp hoặc trả mã 5xx/4xx (trừ 404), tránh log phình to vì lưu lượng bình thường. Kịch bản chính dùng PL1 không có luật loại trừ; PL2--PL4 và tệp \texttt{lab/rules/dvwa-exclusions.conf} chỉ dùng trong thí nghiệm ở Chương~\ref{chap:hanche}.
 

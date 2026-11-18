@@ -8,7 +8,7 @@ Các lỗi chèn mã (SQL Injection, Command Injection), Cross-Site Scripting v�
 
 Ở Việt Nam, TCVN 11930:2017~\cite{tcvn11930} quy định yêu cầu an toàn hệ thống thông tin theo cấp độ; từ cấp độ 2 trở lên có các yêu cầu về phòng chống xâm nhập, ghi nhật ký và bảo vệ ứng dụng trước các dạng tấn công nói trên. Đề tài đặt câu hỏi: \textit{WAF nguồn mở ModSecurity + OWASP CRS chặn được bao nhiêu trong bốn dạng tấn công SQLi, XSS, LFI, Command Injection, phải đánh đổi gì về chặn nhầm và độ trễ, và đáp ứng được những điều khoản nào của TCVN 11930:2017?}
 
-\section{Mục tiêu đề tài}
+\section{Mục tiêu và phạm vi}
 \begin{itemize}
   \item Tìm hiểu kiến trúc, nguyên lý hoạt động của ModSecurity/Coraza và OWASP CRS.
   \item So sánh với giải pháp truyền thống và thương mại.
@@ -17,7 +17,6 @@ Các lỗi chèn mã (SQL Injection, Command Injection), Cross-Site Scripting v�
   \item Đối chiếu yêu cầu TCVN 11930:2017 (cấp độ 2--3) với cấu hình và bằng chứng.
 \end{itemize}
 
-\section{Phạm vi và môi trường}
 Toàn bộ thí nghiệm chạy trên một máy Linux bằng Docker Compose, gồm ba container: WAF (Nginx + ModSecurity v3.0.17 + OWASP CRS 4.30.0), DVWA và MariaDB 11.4 (chi tiết ở Chương~\ref{chap:trienkhai}). Lab được cô lập: các cổng chỉ mở trên \texttt{127.0.0.1} nên máy khác trong mạng LAN không truy cập được, còn CSDL nằm trong mạng Docker \texttt{internal} không có đường ra Internet. Ứng dụng đích DVWA~\cite{dvwa} là ứng dụng web được cố ý viết có lỗ hổng phục vụ học tập, chạy ở mức bảo mật \textit{low}.
 
 Nằm ngoài phạm vi đề tài: tấn công hệ thống thật ngoài lab; tấn công từ chối dịch vụ; tấn công API và bot; triển khai thực tế WAF đám mây (Cloudflare, AWS WAF), vốn chỉ được so sánh về lý thuyết ở Chương~\ref{chap:sosanh}. Hiệu năng được đo trên một máy đơn, chỉ có ý nghĩa so sánh tương đối giữa các cấu hình.
