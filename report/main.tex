@@ -29,9 +29,14 @@
 \graphicspath{{figures/}}
 
 % ---------- Tiêu đề chương / mục ----------
-\titleformat{\chapter}[display]{\bfseries\centering\fontsize{16}{20}\selectfont}
-  {CHƯƠNG \thechapter}{6pt}{\fontsize{16}{20}\selectfont\MakeUppercase}
-\titlespacing*{\chapter}{0pt}{0pt}{18pt}
+\titleformat{\chapter}[hang]{\bfseries\fontsize{15}{18}\selectfont}
+  {CHƯƠNG \thechapter.}{0.5em}{\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{16pt}{10pt}
+% Chương không bắt đầu ở trang mới (tiết kiệm trang, giới hạn 20 trang)
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\chapter}{\if@openright\cleardoublepage\else\clearpage\fi}{\par}{}{\errmessage{patch \string\chapter\space failed}}
+\makeatother
 \titleformat{\section}{\bfseries\fontsize{14}{17}\selectfont}{\thesection}{0.6em}{}
 \titleformat{\subsection}{\bfseries\itshape}{\thesubsection}{0.6em}{}
 \titlecontents{chapter}[0cm]{\bfseries\vspace{0.3cm}}
@@ -72,6 +77,7 @@
 
 \pagenumbering{roman}
 \tableofcontents
+\clearpage
 \chapter*{Danh mục từ viết tắt}
 \addcontentsline{toc}{chapter}{Danh mục từ viết tắt}
 \begin{tabularx}{\linewidth}{@{}lX@{}}
