@@ -52,9 +52,9 @@ Cột \textit{Mức}: \textbf{Đ} đáp ứng, \textbf{MP} một phần, \textbf
 & \texttt{docker compose logs waf}
 & MP \\
 7.2.1.4~c, đ; 7.2.3.3~b, c -- Lưu tập trung, tối thiểu 03 tháng
-& Chưa có: lab chỉ ghi log ra stdout của container
-& --
-& K \\
+& Log WAF về Loki/Grafana; chưa đặt thời hạn lưu
+& Mục~\ref{sec:siem}
+& MP \\
 7.2.1.1~b -- Kiểm soát truy cập giữa các vùng; an toàn máy chủ CSDL
 & Mạng \texttt{edge} và \texttt{backend} (\texttt{internal: true}); CSDL chỉ ở \texttt{backend}, không ra Internet
 & \texttt{docker-compose.yml}
@@ -69,4 +69,4 @@ Cột \textit{Mức}: \textbf{Đ} đáp ứng, \textbf{MP} một phần, \textbf
 \section{Nhận xét mức độ đáp ứng}
 WAF đáp ứng trực tiếp nhất mục 7.2.3.6~c: bốn trong bảy dạng tấn công được nêu (SQLi, OS command injection, LFI, XSS) đã bị chặn trong Chương~\ref{chap:demo}; CRS có nhóm 931 cho RFI nhưng nhóm chưa kiểm thử. Mức đánh giá chỉ là \textit{một phần} vì: CSRF không phát hiện được bằng chữ ký mà phải sửa ở ứng dụng (token chống CSRF); XPath injection chưa kiểm thử; và PL1 vẫn bỏ sót command injection dạng ngắn (mục~\ref{sec:hanche}). Các mục 7.2.3.6~a, b, d cũng chỉ đáp ứng một phần vì WAF là lớp bảo vệ chung, không thay được việc ứng dụng tự kiểm tra dữ liệu theo nghiệp vụ.
 
-Audit log đã có đủ các trường mục 7.2.1.4~a yêu cầu, nhưng cấp độ 3 còn đòi lưu tập trung và giữ tối thiểu 03 tháng; lab mới ghi ra stdout nên cần đẩy log về một SIEM như Wazuh hoặc Loki/Grafana (yêu cầu 7 của đề tài). Giới hạn kết nối đồng thời nằm ngoài khả năng của CRS, có thể bổ sung bằng \texttt{limit\_conn}/\texttt{limit\_req} của nginx. Như vậy, một mình ModSecurity + CRS không đủ cho cấp độ 3.
+Audit log đã có đủ các trường mục 7.2.1.4~a yêu cầu, nhưng cấp độ 3 còn đòi lưu tập trung và giữ tối thiểu 03 tháng; lab đã đẩy log về Loki/Grafana (mục~\ref{sec:siem}) nhưng chưa đặt thời hạn lưu, chưa cảnh báo theo luật 949110 và Loki vẫn chạy cùng máy với WAF. Giới hạn kết nối đồng thời nằm ngoài khả năng của CRS, có thể bổ sung bằng \texttt{limit\_conn}/\texttt{limit\_req} của nginx. Như vậy, một mình ModSecurity + CRS không đủ cho cấp độ 3.

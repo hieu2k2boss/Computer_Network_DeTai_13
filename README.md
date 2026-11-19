@@ -35,6 +35,8 @@ docker compose down
 
 Đăng nhập DVWA bằng trình duyệt: `admin` / `password`. Trước lần đầu dùng trình duyệt, chạy `attack.sh` một lần hoặc vào `/setup.php` bấm "Create / Reset Database".
 
+Log WAF về Loki/Grafana (yêu cầu 7): `docker compose --profile siem up -d`, mở http://localhost:3000, dashboard **WAF - ModSecurity + CRS**.
+
 Các bước demo (cho video), bộ case biến thể / hợp lệ và đo hiệu năng: [`lab/DEMO.md`](lab/DEMO.md).
 
 Bằng chứng mỗi lần chạy nằm ở `lab/evidence/<thời-gian>/`: `summary.txt`, `audit.json`, và body từng phản hồi.
@@ -48,5 +50,6 @@ Biến môi trường (đặt trước lệnh hoặc trong `lab/.env`):
 | `ANOMALY_INBOUND` / `ANOMALY_OUTBOUND` | `5` / `4` | Ngưỡng điểm chặn |
 | `EXCLUSION_FILE` | `./rules/none.conf` | File luật loại trừ nạp sau CRS, ví dụ `./rules/dvwa-exclusions.conf` |
 | `WAF_PORT` / `DVWA_PORT` | `8080` / `8081` | Đổi nếu cổng đã bị chiếm |
+| `GRAFANA_PORT` | `3000` | Cổng Grafana (profile `siem`) |
 
 Ví dụ: `MODSEC_RULE_ENGINE=DetectionOnly docker compose up -d waf`.

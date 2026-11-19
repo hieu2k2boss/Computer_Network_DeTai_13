@@ -91,9 +91,28 @@ Kết quả dùng trong báo cáo (chạy ngày 17/11/2026) được giữ lại
 | `evidence/bypass-pl1/`, `evidence/bypass-pl3-excl/` | Bảng 7.1 |
 | `evidence/benign-pl{1,2,3,4}/`, `evidence/benign-pl{3,4}-excl/` | Bảng 7.2 |
 | `evidence/bench.txt` | Bảng 7.3 |
+| `evidence/siem.txt` | Mục 7.2: log trong Loki sau 1 lần `attack.sh` |
 
-## 5. Dọn dẹp
+## 5. (Tuỳ chọn) Log WAF về Loki/Grafana (yêu cầu 7)
 
 ```sh
-docker compose down -v
+docker compose --profile siem up -d       # thêm loki, alloy, grafana
+./scripts/attack.sh                       # tạo log
+```
+
+- Mở http://localhost:3000, dashboard **WAF - ModSecurity + CRS** (Dashboards). Không cần đăng nhập.
+  - Biểu đồ số yêu cầu bị chặn theo phút, top luật CRS khớp, bảng log: IP nguồn, mã luật, hành động, URI, thông điệp.
+- Alloy đọc log container `waf` qua Docker socket (chỉ đọc) rồi đẩy về Loki; Loki lưu vào volume `loki-data`, không tự xoá.
+- Tự tra trong **Explore**, ví dụ các IP bị chặn:
+
+  ```
+  sum by (ip) (count_over_time({service="waf"} |= "Access denied" | regexp `client: (?P<ip>[^,]+)` [1h]))
+  ```
+
+Cổng 3000 bị chiếm thì đặt `GRAFANA_PORT=23000`.
+
+## 6. Dọn dẹp
+
+```sh
+docker compose --profile siem down -v
 ```
