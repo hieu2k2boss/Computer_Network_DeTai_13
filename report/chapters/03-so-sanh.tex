@@ -1,0 +1,28 @@
+% Yêu cầu 2 — Ngân sách: ~1.5 trang
+\chapter{So sánh với giải pháp truyền thống và thương mại}\label{chap:sosanh}
+
+\section{So sánh với tường lửa mạng truyền thống}
+Tường lửa mạng (iptables/nftables, OPNsense, thiết bị stateful firewall) quyết định theo thông tin tầng 3--4: IP, giao thức, cổng, trạng thái kết nối. Ứng dụng web công khai buộc phải mở cổng 80/443, nên yêu cầu \texttt{?id=1' OR '1'='1} ở tầng 3--4 giống hệt yêu cầu hợp lệ; khi lưu lượng mã hóa TLS, tường lửa còn không thấy nội dung HTTP. IDS/IPS mạng như Suricata có luật cho tấn công web nhưng làm việc trên gói tin nên cũng vướng TLS. WAF kết thúc TLS, phân tích và chuẩn hóa yêu cầu HTTP (giải mã URL, HTML entity) rồi mới so khớp luật. Tuy vậy WAF chỉ hiểu HTTP và không thay được vai trò phân vùng mạng, nên hai loại tường lửa bổ sung cho nhau.
+
+\section{So sánh với WAF thương mại}
+Nhóm chọn ba đại diện cho ba hướng triển khai thương mại: \textbf{F5 BIG-IP Advanced WAF} (trước đây là BIG-IP ASM), thiết bị phần cứng hoặc máy ảo đặt tại trung tâm dữ liệu của tổ chức~\cite{f5waf}; \textbf{Cloudflare WAF}, dịch vụ đám mây mà lưu lượng đi qua mạng biên của Cloudflare nhờ trỏ DNS~\cite{cloudflarewaf}; và \textbf{AWS WAF}, dịch vụ gắn với CloudFront, Application Load Balancer, API Gateway của AWS~\cite{awswaf}. Bảng~\ref{tab:sosanh} tóm tắt so sánh.
+
+\begin{table}[!htb]
+\centering
+\caption{So sánh ModSecurity/Coraza + CRS với một số WAF thương mại}
+\label{tab:sosanh}
+\footnotesize
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.0cm}*{4}{>{\raggedright\arraybackslash}X}@{}}
+\toprule
+\textbf{Tiêu chí} & \textbf{ModSecurity / Coraza + CRS} & \textbf{F5 Advanced WAF} & \textbf{Cloudflare WAF} & \textbf{AWS WAF} \\ \midrule
+Giấy phép, chi phí & Nguồn mở (Apache 2.0), miễn phí; chi phí là công vận hành & Giấy phép thương mại, chi phí cao & Thuê bao theo gói; gói miễn phí có bộ luật cơ bản & Trả theo số web ACL, số luật và số yêu cầu \\
+Triển khai & Tự cài trên máy chủ, container, Kubernetes & Thiết bị hoặc máy ảo tại chỗ & Đám mây, qua DNS & Chỉ trên tài nguyên AWS \\
+Bộ luật & CRS cộng đồng, có thể xem và sửa từng luật & Chữ ký của F5 và chính sách tự học & Bộ luật do Cloudflare quản lý, có phiên bản dựa trên CRS & AWS Managed Rules và luật của bên thứ ba \\
+Chống bot, DDoS tầng 7 & Không có sẵn; cần kết hợp công cụ khác & Có & Có, là thế mạnh & Có, một số tính năng tính phí riêng \\
+Dữ liệu và TLS & Ở trong hạ tầng của tổ chức & Ở trong hạ tầng của tổ chức & Nhà cung cấp kết thúc TLS và thấy nội dung & Ở trong hạ tầng AWS \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+ModSecurity/Coraza + CRS có lợi thế về chi phí bản quyền bằng không, tính minh bạch (đọc được từng luật, biết chính xác vì sao một yêu cầu bị chặn) và triển khai được ở bất kỳ đâu, kể cả mạng nội bộ không ra Internet. Đổi lại, tổ chức tự chịu công vận hành: tinh chỉnh luật loại trừ, cập nhật CRS, xây dựng giám sát; giải pháp thương mại bù phần này bằng giao diện quản trị, bộ luật được cập nhật liên tục, mô hình bảo mật dương (F5) và chống bot, DDoS tầng 7. WAF đám mây hợp với ứng dụng công khai tải lớn, F5 hợp tổ chức lớn cần học chính sách từ lưu lượng, còn ModSecurity/Coraza hợp khi ngân sách hạn chế hoặc cần kiểm soát hoàn toàn chính sách và dữ liệu.

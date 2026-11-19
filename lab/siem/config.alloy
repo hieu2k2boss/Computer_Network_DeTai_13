@@ -1,0 +1,29 @@
+// Đọc log container waf qua Docker socket (chỉ đọc), đẩy về Loki.
+discovery.docker "waf" {
+  host             = "unix:///var/run/docker.sock"
+  refresh_interval = "5s"   // container waf tạo lại thì log về Loki sau vài giây
+  filter {
+    name   = "label"
+    values = ["com.docker.compose.service=waf"]
+  }
+}
+
+discovery.relabel "waf" {
+  targets = discovery.docker.waf.targets
+  rule {
+    target_label = "service"
+    replacement  = "waf"
+  }
+}
+
+loki.source.docker "waf" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.waf.output
+  forward_to = [loki.write.local.receiver]
+}
+
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

@@ -1,0 +1,29 @@
+Case          | Direct (no WAF)        | Via WAF               
+--------------+------------------------+------------------------
+sqli-comment  | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+sqli-pipes    | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+sqli-like     | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+sqli-dblenc   | HTTP 200 exploit=NO    | HTTP 403 exploit=NO   
+xss-case      | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+xss-svg       | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+xss-img       | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+lfi-abs       | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+lfi-hosts     | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+lfi-filter    | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+cmdi-id       | HTTP 200 exploit=YES   | HTTP 200 exploit=YES  
+cmdi-pipe     | HTTP 200 exploit=YES   | HTTP 200 exploit=YES  
+cmdi-newline  | HTTP 200 exploit=YES   | HTTP 200 exploit=YES  
+cmdi-pwd      | HTTP 200 exploit=YES   | HTTP 200 exploit=YES  
+cmdi-config   | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+[*] Luật CRS đã khớp theo từng case (audit log):
+cmdi-config	HTTP 403	930100,930110,930120,949110
+lfi-abs	HTTP 403	930120,932160,949110
+lfi-filter	HTTP 403	933140,949110
+lfi-hosts	HTTP 403	930120,949110
+sqli-comment	HTTP 403	942100,949110
+sqli-dblenc	HTTP 403	942100,949110
+sqli-like	HTTP 403	942100,949110
+sqli-pipes	HTTP 403	942100,949110
+xss-case	HTTP 403	941100,941110,941160,941390,949110
+xss-img	HTTP 403	941100,941120,941160,941390,949110
+xss-svg	HTTP 403	941100,941120,941160,941390,949110

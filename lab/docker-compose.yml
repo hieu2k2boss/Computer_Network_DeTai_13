@@ -1,0 +1,109 @@
+# Lab Đề tài 13: Nginx + ModSecurity v3 + OWASP CRS bảo vệ DVWA.
+#
+#   http://127.0.0.1:8080  -> WAF -> DVWA   (có WAF)
+#   http://127.0.0.1:8081  -> DVWA          (không WAF, để đối chứng)
+#
+# Cô lập: cổng chỉ bind 127.0.0.1 (máy khác trong LAN không truy cập được);
+# CSDL nằm trong mạng internal, không có đường ra Internet.
+# Image ghim theo digest để chạy lại cho ra cùng phiên bản (CRS 4.30.0).
+
+name: waf-lab
+
+services:
+  waf:
+    image: owasp/modsecurity-crs:nginx@sha256:c95914e1855c41791e6745c2a63864a218f99e04948b64d8b31cb7b29b1ba5b3
+    environment:
+      BACKEND: http://dvwa:80
+      MODSEC_RULE_ENGINE: ${MODSEC_RULE_ENGINE:-On}      # On | DetectionOnly | Off
+      BLOCKING_PARANOIA: ${BLOCKING_PARANOIA:-1}         # 1..4
+      ANOMALY_INBOUND: ${ANOMALY_INBOUND:-5}
+      ANOMALY_OUTBOUND: ${ANOMALY_OUTBOUND:-4}
+      MODSEC_AUDIT_ENGINE: RelevantOnly
+      MODSEC_AUDIT_LOG_FORMAT: JSON
+      MODSEC_AUDIT_LOG: /dev/stdout                      # xem bằng: docker compose logs waf
+      LOGLEVEL: info                                     # nginx ghi từng luật khớp (ModSecurity: Warning) để Grafana đếm
+    volumes:
+      # Luật loại trừ (tinh chỉnh false positive), nạp sau CRS. Mặc định không có;
+      # bật bằng EXCLUSION_FILE=./rules/dvwa-exclusions.conf
+      - ${EXCLUSION_FILE:-./rules/none.conf}:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf:ro
+    ports:
+      - "127.0.0.1:${WAF_PORT:-8080}:8080"
+    networks: [edge, backend]
+    depends_on:
+      dvwa:
+        condition: service_started
+
+  dvwa:
+    image: ghcr.io/digininja/dvwa@sha256:61167ec23fbf861f7d96a7beb4be3612d043d48dbc6b239d4f90d7e8cdff8115
+    environment:
+      DB_SERVER: db
+      DB_DATABASE: dvwa
+      DB_USER: dvwa
+      DB_PASSWORD: p@ssw0rd
+      DEFAULT_SECURITY_LEVEL: low
+    ports:
+      - "127.0.0.1:${DVWA_PORT:-8081}:80"
+    networks: [edge, backend]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mariadb:11.4@sha256:5e73baf8179b29f115101bb102763a47a017361f3e9792daccba6646c3ab1532
+    environment:
+      MARIADB_ROOT_PASSWORD: dvwa-root
+      MARIADB_DATABASE: dvwa
+      MARIADB_USER: dvwa
+      MARIADB_PASSWORD: p@ssw0rd
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [backend]
+
+  # --- Yêu cầu 7: log WAF về Loki/Grafana. Chỉ chạy khi bật profile siem:
+  #   docker compose --profile siem up -d   ->  http://127.0.0.1:3000
+  loki:
+    image: grafana/loki:3.5.5@sha256:31628519045e7f28692a7ae73b4a3fd293dccb425585ed5d16ceea3b5c9592e6
+    profiles: [siem]
+    volumes: [loki-data:/loki]       # local-config mặc định: không xoá log cũ
+    networks: [siem]
+
+  alloy:
+    image: grafana/alloy:v1.10.2@sha256:bcf27f18c4402869af112fb39e35e1db3804a404686f4caa20bdf77814219223
+    profiles: [siem]
+    command: run /etc/alloy/config.alloy
+    volumes:
+      - ./siem/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro   # đọc log container waf
+    networks: [siem]
+    depends_on: [loki]
+
+  grafana:
+    image: grafana/grafana:11.4.0@sha256:d8ea37798ccc41061a62ab080f2676dda6bf7815558499f901bdb0f533a456fb
+    profiles: [siem]
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"     # lab: vào thẳng, không đăng nhập
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_USERS_VIEWERS_CAN_EDIT: "true"     # cho Viewer dùng Explore
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    volumes:
+      - ./siem/grafana/datasource.yml:/etc/grafana/provisioning/datasources/loki.yml:ro
+      - ./siem/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/waf.yml:ro
+      - ./siem/grafana/waf.json:/etc/grafana/dashboards/waf.json:ro
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT:-3000}:3000"
+    networks: [edge, siem]
+    depends_on: [loki]
+
+networks:
+  edge: {}
+  backend:
+    internal: true
+  siem:
+    internal: true
+
+volumes:
+  loki-data: {}

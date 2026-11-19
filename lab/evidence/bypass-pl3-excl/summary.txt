@@ -1,0 +1,33 @@
+Case          | Direct (no WAF)        | Via WAF               
+--------------+------------------------+------------------------
+sqli-comment  | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+sqli-pipes    | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+sqli-like     | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+sqli-dblenc   | HTTP 200 exploit=NO    | HTTP 403 exploit=NO   
+xss-case      | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+xss-svg       | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+xss-img       | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+lfi-abs       | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+lfi-hosts     | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+lfi-filter    | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+cmdi-id       | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+cmdi-pipe     | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+cmdi-newline  | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+cmdi-pwd      | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+cmdi-config   | HTTP 200 exploit=YES   | HTTP 403 exploit=NO   
+[*] Luật CRS đã khớp theo từng case (audit log):
+cmdi-config	HTTP 403	930100,930110,930120,932236,942460,949110
+cmdi-id	HTTP 403	932350,949110
+cmdi-newline	HTTP 403	920272,932350,949110
+cmdi-pipe	HTTP 403	932350,949110
+cmdi-pwd	HTTP 403	932350,949110
+lfi-abs	HTTP 403	930120,932160,932236,949110
+lfi-filter	HTTP 403	931130,933140,949110
+lfi-hosts	HTTP 403	930120,949110
+sqli-comment	HTTP 403	932190,932240,942100,942130,942180,942330,942431,942440,942460,942520,949110
+sqli-dblenc	HTTP 403	920230,920272,942100,942130,942180,942330,942370,942390,942511,942520,949110
+sqli-like	HTTP 403	942100,942130,942180,942260,942390,942511,949110
+sqli-pipes	HTTP 403	932240,942100,942120,942130,942180,942330,942370,942431,942460,942490,942520,949110
+xss-case	HTTP 403	941100,941110,941160,941320,941390,942131,942431,949110
+xss-img	HTTP 403	941100,941120,941150,941160,941320,941390,942431,949110
+xss-svg	HTTP 403	941100,941120,941160,941390,949110

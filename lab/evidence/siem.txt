@@ -1,0 +1,42 @@
+# Log WAF trong Loki, truy vấn qua Grafana sau đúng 1 lần ./scripts/attack.sh trên lab mới dựng (2026-11-19 09:27 +07)
+
+## Số yêu cầu bị chặn (949110)
+[{},[4]]
+
+## Số lần khớp theo luật
+[{"rule":"930100"},[1]]
+[{"rule":"930110"},[2]]
+[{"rule":"930120"},[2]]
+[{"rule":"932160"},[2]]
+[{"rule":"941100"},[1]]
+[{"rule":"941110"},[1]]
+[{"rule":"941160"},[1]]
+[{"rule":"941390"},[1]]
+[{"rule":"942100"},[1]]
+[{"rule":"949110"},[4]]
+
+## Log đã tách trường: IP, luật, hành động, URI, thông điệp (mới nhất trước)
+172.20.0.1  949110  Access denied with code 403  /vulnerabilities/exec/  Inbound Anomaly Score Exceeded (Total Score: 10)
+172.20.0.1  932160  Warning  /vulnerabilities/exec/  Remote Command Execution: Unix Shell Code Found
+172.20.0.1  930120  Warning  /vulnerabilities/exec/  OS File Access Attempt
+172.20.0.1  949110  Access denied with code 403  /vulnerabilities/fi/  Inbound Anomaly Score Exceeded (Total Score: 30)
+172.20.0.1  932160  Warning  /vulnerabilities/fi/  Remote Command Execution: Unix Shell Code Found
+172.20.0.1  930120  Warning  /vulnerabilities/fi/  OS File Access Attempt
+172.20.0.1  930110  Warning  /vulnerabilities/fi/  Path Traversal Attack (/../) or (/.../)
+172.20.0.1  930110  Warning  /vulnerabilities/fi/  Path Traversal Attack (/../) or (/.../)
+172.20.0.1  930100  Warning  /vulnerabilities/fi/  Path Traversal Attack (/../) or (/.../)
+172.20.0.1  949110  Access denied with code 403  /vulnerabilities/xss_r/  Inbound Anomaly Score Exceeded (Total Score: 20)
+172.20.0.1  941390  Warning  /vulnerabilities/xss_r/  Javascript method detected
+172.20.0.1  941160  Warning  /vulnerabilities/xss_r/  NoScript XSS InjectionChecker: HTML Injection
+172.20.0.1  941110  Warning  /vulnerabilities/xss_r/  XSS Filter - Category 1: Script Tag Vector
+172.20.0.1  941100  Warning  /vulnerabilities/xss_r/  XSS Attack Detected via libinjection
+172.20.0.1  949110  Access denied with code 403  /vulnerabilities/sqli/  Inbound Anomaly Score Exceeded (Total Score: 5)
+172.20.0.1  942100  Warning  /vulnerabilities/sqli/  SQL Injection Attack Detected via libinjection
+
+## Cổng công bố (chỉ 127.0.0.1)
+alloy	
+db	
+dvwa	127.0.0.1:8081->80/tcp
+grafana	127.0.0.1:3000->3000/tcp
+loki	
+waf	127.0.0.1:8080->8080/tcp

